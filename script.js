@@ -230,3 +230,19 @@ try {
   preferredDashboard = savedDemoUser && savedDemoUser.role ? savedDemoUser.role : (localStorage.getItem("lcDashboardRole") || "Worker");
 } catch {}
 setDashboardRole(preferredDashboard);
+
+/* Supervised crew-observation learning preview */
+const shadowForm = document.getElementById("shadowForm");
+if (shadowForm) {
+  shadowForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const output = document.getElementById("shadowOutput");
+    if (!document.getElementById("shadowAdult").checked) {
+      output.textContent = "This proposed site-observation option is for adult learners aged 18 or older only.";
+      return;
+    }
+    const trade = document.getElementById("shadowTrade").value;
+    const area = document.getElementById("shadowArea").value.trim() || "your preferred area";
+    output.textContent = "Demo request preview: you are interested in observing " + trade + " work near " + area + ". A real programme would require a confirmed slot, site-manager approval, a named adult supervisor, safety induction and appropriate protective equipment. No visit has been booked.";
+  });
+}
