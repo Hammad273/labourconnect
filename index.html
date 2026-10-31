@@ -77,7 +77,7 @@
       <div class="dashboard-grid" id="workerDashboard">
         <a class="dashboard-card" href="#jobs"><span>🔎</span><h3>Find nearby jobs</h3><p>Search sample openings by skill and location.</p><b>Explore jobs →</b></a>
         <a class="dashboard-card" href="#skill-passport"><span>🪪</span><h3>My Skill Passport</h3><p>Prepare a simple profile of your skills and experience.</p><b>Create profile →</b></a>
-        <a class="dashboard-card" href="#wage-records"><span>🗓️</span><h3>Attendance & wages</h3><p>Estimate earnings from sample workdays and daily rates.</p><b>View wage tool →</b></a>
+        <a class="dashboard-card" href="#wage-records"><span>🗓️</span><h3>Attendance & wages</h3><p>Estimate earnings from sample workdays and daily rates.</p><b>View wage tool →</b></a>\n        <a class="dashboard-card" href="#work-agreement"><span>📄</span><h3>My work agreement</h3><p>Review the agreed wage and job conditions.</p><b>Prepare agreement →</b></a>
         <a class="dashboard-card" href="#learn-earn"><span>📚</span><h3>Learn new skills</h3><p>Browse practical learning topics for your trade.</p><b>Explore learning →</b></a>
         <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Safety reminders</h3><p>Review a basic pre-work checklist.</p><b>Review checklist →</b></a>
         <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Saved crews</h3><p>Keep a local demo list of crews you may work with.</p><b>View saved crews →</b></a>
@@ -86,7 +86,7 @@
         <a class="dashboard-card" href="#crew-match"><span>👷</span><h3>Build a project crew</h3><p>Set the number of workers needed for each skill.</p><b>Plan a crew →</b></a>
         <a class="dashboard-card" href="#smart-match"><span>✨</span><h3>Match job requirements</h3><p>Find sample listings by skill and preferred area.</p><b>Find matches →</b></a>
         <a class="dashboard-card" href="#nearby-radar"><span>📍</span><h3>Explore work areas</h3><p>Review illustrative sample listings by area.</p><b>Open work radar →</b></a>
-        <a class="dashboard-card" href="#fair-work"><span>⚖️</span><h3>Cost transparency</h3><p>Break down sample wages and a separately stated fee.</p><b>Calculate costs →</b></a>
+        <a class="dashboard-card" href="#fair-work"><span>⚖️</span><h3>Cost transparency</h3><p>Break down sample wages and a separately stated fee.</p><b>Calculate costs →</b></a>\n        <a class="dashboard-card" href="#work-agreement"><span>📄</span><h3>Work agreements</h3><p>Preview clear job and wage terms before work begins.</p><b>Prepare agreement →</b></a>
         <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Repeat teams</h3><p>Save a demo crew label for a future project plan.</p><b>Manage crews →</b></a>
         <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Site safety reminders</h3><p>Review basic reminders before work begins.</p><b>Review checklist →</b></a>
       </div>
@@ -97,7 +97,7 @@
       <div class="section-heading">
         <span class="section-kicker">THE LABOURCONNECT TOOLKIT</span>
         <h2>More than a job board.</h2>
-        <p>Ten practical tools designed around workers and contractors. Explore each demo below.</p>
+        <p>Eleven practical tools designed around workers and contractors. Explore each demo below.</p>
       </div>
       <div class="tool-grid">
         <article class="tool-card" id="crew-match"><span class="tool-number">01</span><span class="tool-icon">👷</span><h3>CrewMatch</h3><p>Plan a team for a project by choosing the skills and number of people needed.</p><form id="crewForm" class="tool-form"><label>Project location<input id="crewLocation" placeholder="e.g. Kukatpally"></label><div class="mini-fields"><label>Masons<input id="crewMasons" type="number" min="0" max="50" value="2"></label><label>Helpers<input id="crewHelpers" type="number" min="0" max="50" value="3"></label><label>Electricians<input id="crewElectricians" type="number" min="0" max="50" value="1"></label></div><button class="button button-primary" type="submit">Build sample crew</button></form><p class="tool-output" id="crewOutput" aria-live="polite">Choose your team requirements to see a sample crew plan.</p></article>
@@ -123,9 +123,34 @@
           <p class="tool-output">Prototype learning catalogue. Training availability and certification are not provided by this demo.</p></article>
         <article class="tool-card" id="repeat-crew"><span class="tool-number">08</span><span class="tool-icon">🔁</span><h3>Repeat Crew Booking</h3><p>Save a sample crew label locally and see it in your saved list.</p><form id="crewSaveForm" class="tool-form"><label>Crew name<input id="savedCrewName" maxlength="40" placeholder="e.g. Finishing team"></label><label>Skills in this crew<input id="savedCrewSkills" placeholder="Mason, painter, helpers"></label><button class="button button-primary" type="submit">Save demo crew</button></form><ul id="savedCrewList" class="saved-list"><li>No demo crews saved yet.</li></ul></article>
         <article class="tool-card" id="fair-work"><span class="tool-number">09</span><span class="tool-icon">⚖️</span><h3>Fair Work Transparency</h3><p>Break down an example job budget so the agreed daily wage is visible.</p><form id="fairForm" class="tool-form"><div class="mini-fields"><label>Daily wage (₹)<input id="fairWage" type="number" min="0" value="900"></label><label>Days<input id="fairDays" type="number" min="1" max="31" value="10"></label></div><label>Platform fee (₹)<input id="fairFee" type="number" min="0" value="0"></label><button class="button button-primary" type="submit">Show cost breakdown</button></form><p class="tool-output" id="fairOutput" aria-live="polite">No hidden deductions are assumed. Enter sample values to see the breakdown.</p></article>
+        <article class="tool-card" id="work-agreement">
+          <span class="tool-number">11</span><span class="tool-icon">📄</span>
+          <h3>Digital Work Agreement</h3>
+          <p>Prepare a written record of the job terms for both parties to review before work starts.</p>
+          <form id="agreementForm" class="tool-form">
+            <label>Contractor display name<input id="agreementContractor" maxlength="50" required placeholder="Contractor name"></label>
+            <label>Worker display name<input id="agreementWorker" maxlength="50" required placeholder="Worker name"></label>
+            <label>Work / trade<input id="agreementTrade" maxlength="60" required placeholder="e.g. Masonry work"></label>
+            <label>Work location<input id="agreementLocation" maxlength="80" required placeholder="Area / project location"></label>
+            <div class="mini-fields">
+              <label>Daily wage (₹)<input id="agreementWage" type="number" min="1" max="100000" required value="900"></label>
+              <label>Number of days<input id="agreementDays" type="number" min="1" max="365" required value="10"></label>
+            </div>
+            <label>Payment schedule<select id="agreementSchedule"><option>At the end of each workday</option><option>Weekly</option><option>At project completion</option><option>Other — specify in writing before acceptance</option></select></label>
+            <label>Agreed payment date / details<input id="agreementPaymentDate" maxlength="100" required placeholder="e.g. Every Saturday"></label>
+            <label>Other agreed terms (optional)<textarea id="agreementOther" rows="2" maxlength="300" placeholder="Only include terms both parties have discussed and accepted."></textarea></label>
+            <label class="agreement-consent"><input id="contractorAdult" type="checkbox" required> Contractor confirms they are 18 or older and have reviewed these terms.</label>
+            <label class="agreement-consent"><input id="workerAdult" type="checkbox" required> Worker confirms they are 18 or older and have reviewed these terms.</label>
+            <label class="agreement-consent"><input id="agreementConsent" type="checkbox" required> Both parties freely agree to the displayed terms before work begins.</label>
+            <button class="button button-primary" type="submit">Generate agreement preview</button>
+          </form>
+          <div class="agreement-preview" id="agreementPreview" aria-live="polite">Complete the fields to prepare a sample agreement. No agreement is signed or stored by this demo.</div>
+          <button class="button button-outline" id="printAgreement" type="button" disabled>Print / Save preview as PDF</button>
+          <p class="agreement-caution"><strong>Important:</strong> This is a prototype template, not legal advice or a lawyer-approved contract. It does not verify identities, capture legally authenticated signatures, or guarantee recovery of unpaid wages. Any real agreement should be reviewed for applicable Indian law. A worker may keep the document and seek advice from the appropriate labour authority or a qualified lawyer about unpaid wages or unlawful deductions. No term here removes statutory rights.</p>
+        </article>
         <article class="tool-card" id="smart-match"><span class="tool-number">10</span><span class="tool-icon">✨</span><h3>Smart Worker Matching</h3><p>See a rule-based sample match using skill and preferred area.</p><form id="matchForm" class="tool-form"><label>Required skill<select id="matchSkill"><option value="mason">Mason</option><option value="electrician">Electrician</option><option value="painter">Painter</option><option value="plumber">Plumber</option><option value="carpenter">Carpenter</option><option value="helper">Helper</option></select></label><label>Preferred area<select id="matchArea"><option value="all">Any sample area</option><option value="kukatpally">Kukatpally</option><option value="secunderabad">Secunderabad</option><option value="miyapur">Miyapur</option><option value="lb nagar">LB Nagar</option><option value="gachibowli">Gachibowli</option><option value="uppal">Uppal</option></select></label><button class="button button-primary" type="submit">Find sample matches</button></form><p class="tool-output" id="matchOutput" aria-live="polite">Matches are based on the six sample job cards above, not real worker profiles or AI.</p></article>
       </div>
-      <p class="prototype-disclaimer"><strong>Prototype notice:</strong> All tools use sample information in this browser. There is no live worker verification, GPS tracking, voice server, job application, payment processing, official training certification or emergency reporting. Do not enter private personal information.</p>
+      <p class="prototype-disclaimer"><strong>Prototype notice:</strong> All tools use sample information in this browser. There is no live worker verification, GPS tracking, voice server, job application, payment processing, legally authenticated contract signing, official training certification or emergency reporting. Do not enter private personal information.</p>
     </section>
 
     <section class="about-section" id="about"><div><span class="section-kicker">OUR PURPOSE</span><h2>Making work connections easier.</h2></div><p>LabourConnect is a project concept designed to bring workers and contractors together in one place. The goal is to make opportunities easier to discover and hiring easier to organise.</p></section>
