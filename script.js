@@ -58,6 +58,7 @@ accountForm.addEventListener("submit", (event) => {
   };
   try {
     localStorage.setItem("labourConnectDemoUser", JSON.stringify(demoUser));
+    setDashboardRole(demoUser.role);
     closeModal();
     showToast("Welcome, " + demoUser.name + "! Demo profile saved in this browser. No OTP or real login is enabled.");
     accountForm.reset();
@@ -200,3 +201,32 @@ document.getElementById("matchForm").addEventListener("submit", event => {
   const matches = jobCards.filter(card => card.dataset.skill.includes(skill) && (area === "all" || card.dataset.location.includes(area)));
   document.getElementById("matchOutput").textContent = matches.length ? "Sample matches: " + matches.map(card => card.querySelector("h3").textContent + " (" + card.querySelector(".job-meta").textContent.replace("⌖ ","") + ")").join("; ") + ". These are job listings, not verified workers." : "No sample matches found. Try another skill or area.";
 });
+
+/* Worker and contractor dashboard switching */
+function setDashboardRole(role) {
+  const worker = role !== "Contractor";
+  const workerPanel = document.getElementById("workerDashboard");
+  const contractorPanel = document.getElementById("contractorDashboard");
+  if (!workerPanel || !contractorPanel) return;
+  workerPanel.hidden = !worker;
+  contractorPanel.hidden = worker;
+  document.getElementById("dashboardTitle").textContent = "Welcome to your " + (worker ? "Worker" : "Contractor") + " dashboard";
+  document.getElementById("dashboardIntro").textContent = worker
+    ? "Explore work opportunities and organise your skills in one place."
+    : "Plan project teams, review sample matches and organise work costs.";
+  document.querySelectorAll("[data-dashboard]").forEach(button => {
+    const active = button.dataset.dashboard === (worker ? "Worker" : "Contractor");
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  try { localStorage.setItem("lcDashboardRole", worker ? "Worker" : "Contractor"); } catch {}
+}
+document.querySelectorAll("[data-dashboard]").forEach(button => {
+  button.addEventListener("click", () => setDashboardRole(button.dataset.dashboard));
+});
+let preferredDashboard = "Worker";
+try {
+  const savedDemoUser = JSON.parse(localStorage.getItem("labourConnectDemoUser") || "null");
+  preferredDashboard = savedDemoUser && savedDemoUser.role ? savedDemoUser.role : (localStorage.getItem("lcDashboardRole") || "Worker");
+} catch {}
+setDashboardRole(preferredDashboard);
