@@ -15,7 +15,7 @@
     <a class="brand" href="#" aria-label="LabourConnect home"><span class="brand-mark">LC</span><span>Labour<span class="brand-accent">Connect</span></span></a>
     <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
     <nav class="nav-links" id="navLinks">
-      <a href="#jobs" data-i18n="findJobs">Find jobs</a><a href="#how" data-i18n="howWorks">How it works</a><a href="#about" data-i18n="about">About</a><label class="language-picker"><span class="sr-only">Language</span><select id="languageSelect" aria-label="Choose language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option></select></label>
+      <a href="#jobs" data-i18n="findJobs">Find jobs</a><a href="#how" data-i18n="howWorks">How it works</a><a href="#about" data-i18n="about">About</a><a href="#dashboards">Dashboards</a><label class="language-picker"><span class="sr-only">Language</span><select id="languageSelect" aria-label="Choose language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option></select></label>
       <button class="button button-outline" data-open="login">Log in</button>
       <button class="button button-primary" data-open="register">Join LabourConnect</button>
     </nav>
@@ -61,6 +61,37 @@
       <div class="steps-grid"><article class="step-card"><span class="step-number">01</span><div class="step-icon">♙</div><h3>Workers create a profile</h3><p>Add your skills, experience and location so contractors can understand what you do.</p></article><article class="step-card"><span class="step-number">02</span><div class="step-icon">⌕</div><h3>Contractors find talent</h3><p>Explore worker profiles and connect with people who match the work required.</p></article><article class="step-card"><span class="step-number">03</span><div class="step-icon">↗</div><h3>Connect and get started</h3><p>Discuss the work details directly and agree on the next steps.</p></article></div>
     </section>
 
+
+
+    <section class="dashboard-section" id="dashboards">
+      <div class="section-heading">
+        <span class="section-kicker">YOUR WORKSPACE</span>
+        <h2>A dashboard for every role.</h2>
+        <p>Choose how you are using LabourConnect to see the tools that matter most.</p>
+      </div>
+      <div class="dashboard-switch" role="group" aria-label="Choose dashboard">
+        <button class="dashboard-tab active" type="button" data-dashboard="Worker" aria-pressed="true">Worker dashboard</button>
+        <button class="dashboard-tab" type="button" data-dashboard="Contractor" aria-pressed="false">Contractor dashboard</button>
+      </div>
+      <div class="dashboard-welcome"><div><span class="section-kicker">DEMO WORKSPACE</span><h3 id="dashboardTitle">Welcome to your Worker dashboard</h3><p id="dashboardIntro">Explore work opportunities and organise your skills in one place.</p></div><span class="demo-pill">Sample prototype</span></div>
+      <div class="dashboard-grid" id="workerDashboard">
+        <a class="dashboard-card" href="#jobs"><span>🔎</span><h3>Find nearby jobs</h3><p>Search sample openings by skill and location.</p><b>Explore jobs →</b></a>
+        <a class="dashboard-card" href="#skill-passport"><span>🪪</span><h3>My Skill Passport</h3><p>Prepare a simple profile of your skills and experience.</p><b>Create profile →</b></a>
+        <a class="dashboard-card" href="#wage-records"><span>🗓️</span><h3>Attendance & wages</h3><p>Estimate earnings from sample workdays and daily rates.</p><b>View wage tool →</b></a>
+        <a class="dashboard-card" href="#learn-earn"><span>📚</span><h3>Learn new skills</h3><p>Browse practical learning topics for your trade.</p><b>Explore learning →</b></a>
+        <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Safety reminders</h3><p>Review a basic pre-work checklist.</p><b>Review checklist →</b></a>
+        <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Saved crews</h3><p>Keep a local demo list of crews you may work with.</p><b>View saved crews →</b></a>
+      </div>
+      <div class="dashboard-grid" id="contractorDashboard" hidden>
+        <a class="dashboard-card" href="#crew-match"><span>👷</span><h3>Build a project crew</h3><p>Set the number of workers needed for each skill.</p><b>Plan a crew →</b></a>
+        <a class="dashboard-card" href="#smart-match"><span>✨</span><h3>Match job requirements</h3><p>Find sample listings by skill and preferred area.</p><b>Find matches →</b></a>
+        <a class="dashboard-card" href="#nearby-radar"><span>📍</span><h3>Explore work areas</h3><p>Review illustrative sample listings by area.</p><b>Open work radar →</b></a>
+        <a class="dashboard-card" href="#fair-work"><span>⚖️</span><h3>Cost transparency</h3><p>Break down sample wages and a separately stated fee.</p><b>Calculate costs →</b></a>
+        <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Repeat teams</h3><p>Save a demo crew label for a future project plan.</p><b>Manage crews →</b></a>
+        <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Site safety reminders</h3><p>Review basic reminders before work begins.</p><b>Review checklist →</b></a>
+      </div>
+      <p class="dashboard-note">Dashboard cards open demo tools on this page. Accounts, job listings, worker matches and records are not connected to a live backend.</p>
+    </section>
 
     <section class="tools-section" id="labour-tools">
       <div class="section-heading">
