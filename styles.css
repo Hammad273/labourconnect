@@ -59,3 +59,12 @@
 .dashboard-card b{font-size:12px;color:var(--green)}
 .dashboard-note{max-width:850px;margin:17px auto 0;text-align:center;font-size:11px;color:var(--muted)}
 @media(max-width:700px){.dashboard-section{padding:60px 20px}.dashboard-grid{grid-template-columns:1fr}.dashboard-welcome{align-items:flex-start;flex-direction:column}.dashboard-switch{width:100%}.dashboard-tab{flex:1;padding:11px 8px;font-size:12px}}
+
+/* Learn alongside a crew - supervised observation concept */
+.crew-shadow{margin-top:18px;padding:16px;background:#f7f9f6;border:1px solid var(--line);border-radius:10px}
+.shadow-label{font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--green)}
+.crew-shadow h4{font-size:16px;margin:7px 0}
+.crew-shadow>p:not(.tool-output){font-size:12px;color:var(--muted);margin:0 0 12px}
+.shadow-consent{display:flex!important;grid-template-columns:auto 1fr;align-items:center;gap:9px!important}
+.shadow-consent input{width:auto!important;accent-color:var(--green)}
+.shadow-safety{font-size:11px!important;line-height:1.55;color:#725d30!important;background:#fff8e8;border:1px solid #eee0bd;padding:10px;border-radius:7px;margin-top:10px!important}
