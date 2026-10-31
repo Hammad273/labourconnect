@@ -13,3 +13,28 @@
 .photo-strip article:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#10251dcc)}
 .photo-strip span{position:absolute;z-index:1;left:18px;bottom:14px;color:white;font-weight:800;font-size:17px}
 @media(max-width:650px){.photo-strip{grid-template-columns:1fr;padding:0 22px 18px}.photo-strip article{height:145px}.hero-art{height:290px}.hero-photo{inset:12px 0;width:100%;height:calc(100% - 24px)}.language-picker{width:100%}.language-picker select{width:100%}}
+
+/* LabourConnect ten-feature prototype */
+.tools-section{padding:82px max(6vw,24px);background:#f7f8f3}
+.tools-section .section-heading{max-width:760px}
+.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.tool-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 24px #173d2e08;min-width:0}
+.tool-number{float:right;color:#9aa99f;font-size:11px;font-weight:800;letter-spacing:1px}
+.tool-icon{display:grid;place-items:center;width:44px;height:44px;background:var(--mint);border-radius:12px;font-size:22px;margin-bottom:12px}
+.tool-card h3{margin:0 0 6px;font-size:20px;letter-spacing:-.5px}
+.tool-card>p:not(.tool-output){font-size:13px;color:var(--muted);margin:0 0 15px}
+.tool-form{display:grid;gap:11px;margin-top:15px}
+.tool-form label,.tool-label{display:grid;gap:5px;font-size:12px;font-weight:700;color:#536158}
+.tool-form input,.tool-form select,.tool-label select{width:100%;padding:10px 11px;border:1px solid #dce4dd;border-radius:7px;background:#fff;font:13px "DM Sans",sans-serif;color:var(--ink)}
+.tool-form .button,.tool-card>.button{justify-self:start;margin-top:3px}
+.mini-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini-fields label{min-width:0}
+.tool-output{padding:11px 12px;background:#f3f7f3;border-left:3px solid var(--green);border-radius:5px;font-size:12px;color:#42564a;margin:14px 0 0;overflow-wrap:anywhere}
+.tool-label{margin:12px 0}
+.safety-checks{display:grid;gap:10px;margin:15px 0}
+.safety-checks label{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#536158}
+.safety-checks input{accent-color:var(--green);margin-top:3px}
+.learning-list{padding-left:19px;font-size:13px;color:#536158;line-height:1.9}
+.saved-list{padding-left:18px;font-size:12px;color:#536158}
+.prototype-disclaimer{margin:24px auto 0;max-width:900px;padding:15px 17px;border:1px solid #e4d9b9;background:#fffaf0;border-radius:9px;color:#6e5b2f;font-size:12px}
+@media(max-width:700px){.tools-section{padding:60px 20px}.tool-grid{grid-template-columns:1fr}.mini-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
