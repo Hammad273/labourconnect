@@ -15,7 +15,7 @@
     <a class="brand" href="#" aria-label="LabourConnect home"><span class="brand-mark">LC</span><span>Labour<span class="brand-accent">Connect</span></span></a>
     <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
     <nav class="nav-links" id="navLinks">
-      <a href="#jobs">Find jobs</a><a href="#how">How it works</a><a href="#about">About</a>
+      <a href="#jobs" data-i18n="findJobs">Find jobs</a><a href="#how" data-i18n="howWorks">How it works</a><a href="#about" data-i18n="about">About</a><label class="language-picker"><span class="sr-only">Language</span><select id="languageSelect" aria-label="Choose language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option></select></label>
       <button class="button button-outline" data-open="login">Log in</button>
       <button class="button button-primary" data-open="register">Join LabourConnect</button>
     </nav>
@@ -30,14 +30,14 @@
         <div class="hero-actions"><a class="button button-primary button-large" href="#jobs">Explore jobs <span>→</span></a><button class="button button-light button-large" data-open="register">Join as a worker</button></div>
         <div class="hero-note"><span>✓</span> A simpler way to connect, collaborate and get work done.</div>
       </div>
-      <div class="hero-art" aria-label="Illustration of a construction worker">
+      <div class="hero-art" aria-label="Construction worker photograph"><img class="hero-photo" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=85" alt="Construction workers working together on a building site">
         <div class="art-circle"></div><div class="art-card art-card-top"><span class="art-icon">✓</span><span><b>Skilled people</b><small>Ready to connect</small></span></div>
         <div class="worker-illustration"><div class="helmet"></div><div class="head"></div><div class="body-shape"><i></i></div><div class="arm arm-left"></div><div class="arm arm-right"></div></div>
         <div class="art-card art-card-bottom"><span class="pin">⌖</span><span><b>Local opportunities</b><small>Closer to your community</small></span></div>
       </div>
     </section>
 
-    <section class="search-panel" id="jobs">
+    <section class="photo-strip" aria-label="People at work"><article><img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80" alt="Electrician working on a project"><span>Skilled work</span></article><article><img src="https://images.unsplash.com/photo-1503387762-592dee58c266?auto=format&fit=crop&w=700&q=80" alt="Building construction site"><span>Building together</span></article><article><img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=700&q=80" alt="Worker using tools"><span>Local opportunities</span></article></section><section class="search-panel" id="jobs">
       <div><span class="section-kicker">OPPORTUNITIES</span><h2>Find the work you need</h2><p>Search sample job listings by skill or location.</p></div>
       <form class="search-form" id="searchForm">
         <label><span>Skill or job title</span><input id="skillSearch" type="search" placeholder="e.g. Electrician, Mason"></label>
@@ -67,7 +67,7 @@
 
   <footer><a class="brand footer-brand" href="#"><span class="brand-mark">LC</span><span>Labour<span class="brand-accent">Connect</span></span></a><p>Connecting skills with opportunity.</p><small>© 2026 LabourConnect · Student project prototype</small></footer>
 
-  <div class="modal-backdrop" id="modalBackdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Close">×</button><span class="section-kicker">LABOURCONNECT</span><h2 id="modalTitle">Create your demo account</h2><p class="modal-intro">Choose how you want to use the prototype.</p><form id="accountForm"><label>Your name<input id="accountName" required maxlength="60" placeholder="Enter your name"></label><label>Email address<input id="accountEmail" type="email" required placeholder="you@example.com"></label><label>I am a<select id="accountRole"><option value="Worker">Worker</option><option value="Contractor">Contractor</option></select></label><button class="button button-primary button-full" type="submit">Continue</button></form><p class="demo-note">Demo only: details stay in this browser. Do not enter sensitive or real account information.</p></section></div>
+  <div class="modal-backdrop" id="modalBackdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Close">×</button><span class="section-kicker">LABOURCONNECT</span><h2 id="modalTitle">Create your demo account</h2><p class="modal-intro">Choose how you want to use the prototype.</p><form id="accountForm"><label>Your name<input id="accountName" required maxlength="60" placeholder="Enter your name"></label><label data-i18n="mobileLabel">Mobile number<input id="accountPhone" type="tel" inputmode="numeric" autocomplete="tel" pattern="[6-9][0-9]{9}" maxlength="10" required placeholder="10-digit mobile number"></label><label>I am a<select id="accountRole"><option value="Worker">Worker</option><option value="Contractor">Contractor</option></select></label><button class="button button-primary button-full" type="submit">Continue</button></form><p class="demo-note">Demo only: details stay in this browser. Do not enter sensitive or real account information.</p></section></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
