@@ -110,3 +110,93 @@ function setLanguage(lang){
   if(mobileLabel)mobileLabel.placeholder=t.mobilePlaceholder;
 }
 document.getElementById("languageSelect").addEventListener("change",e=>setLanguage(e.target.value));
+
+/* Interactive demonstrations for the ten LabourConnect features */
+const crewForm = document.getElementById("crewForm");
+crewForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const fields = [["Masons", "crewMasons"], ["Helpers", "crewHelpers"], ["Electricians", "crewElectricians"]];
+  const parts = fields.map(([label,id]) => label + ": " + Number(document.getElementById(id).value || 0));
+  const total = fields.reduce((sum, item) => sum + Number(document.getElementById(item[1]).value || 0), 0);
+  document.getElementById("crewOutput").textContent = total ? "Sample crew for " + (document.getElementById("crewLocation").value.trim() || "your project") + " — " + total + " positions. " + parts.join(" · ") + ". Each worker would need to accept individually in a real service." : "Add at least one role to build a crew.";
+});
+const radarArea = document.getElementById("radarArea");
+const radarRadius = document.getElementById("radarRadius");
+function updateRadar() {
+  const area = radarArea.value;
+  const cards = jobCards.filter(card => area === "all" || card.dataset.location.includes(area));
+  document.getElementById("radarOutput").textContent = cards.length ? cards.length + " sample listing(s) in the selected area: " + cards.map(card => card.querySelector("h3").textContent).join(", ") + ". The " + radarRadius.value + " km radius is a demo filter only; exact distances are not calculated." : "No sample listings in this area. Try another area.";
+}
+radarArea.addEventListener("change", updateRadar);
+radarRadius.addEventListener("change", updateRadar);
+document.getElementById("passportForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("passportName").value.trim() || "Demo worker";
+  document.getElementById("passportOutput").textContent = name + " · " + document.getElementById("passportSkill").value + " · " + document.getElementById("passportExperience").value + " experience · Languages: " + (document.getElementById("passportLanguages").value.trim() || "Not added") + ". Sample profile preview only; no identity or skill verification.";
+});
+document.getElementById("voiceStart").addEventListener("click", () => {
+  const output = document.getElementById("voiceOutput");
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { output.textContent = "Speech recognition is not supported in this browser. Use the job search field to type instead."; return; }
+  const recognition = new SpeechRecognition();
+  recognition.lang = document.getElementById("voiceLanguage").value;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  output.textContent = "Listening… Please speak a job title.";
+  recognition.onresult = event => {
+    const phrase = event.results[0][0].transcript;
+    output.textContent = "Heard: " + phrase + ". The phrase has been placed in the job search field; press Search jobs to filter sample listings.";
+    skillSearch.value = phrase;
+    locationSearch.value = "";
+  };
+  recognition.onerror = () => { output.textContent = "Voice input could not be completed. Check microphone permission or type your search instead."; };
+  recognition.onend = () => {};
+  recognition.start();
+});
+document.getElementById("wageForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const days = Number(document.getElementById("wageDays").value);
+  const rate = Number(document.getElementById("dailyWage").value);
+  const total = days * rate;
+  document.getElementById("wageOutput").textContent = days + " days × ₹" + rate.toLocaleString("en-IN") + " = ₹" + total.toLocaleString("en-IN") + ". Status selected: " + document.getElementById("paymentStatus").value + ". Demo calculation only; no payment is recorded.";
+});
+document.getElementById("safetyReview").addEventListener("click", () => {
+  const checks = [...document.querySelectorAll(".safety-checks input")];
+  const done = checks.filter(input => input.checked).length;
+  document.getElementById("safetyOutput").textContent = done + " of " + checks.length + " reminders checked. Review every site-specific hazard with the responsible supervisor; this checklist is not a substitute for proper training or site safety procedures.";
+});
+document.getElementById("crewSaveForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("savedCrewName").value.trim();
+  const skills = document.getElementById("savedCrewSkills").value.trim();
+  if (!name || !skills) { showToast("Enter a crew name and skills first."); return; }
+  let crews = [];
+  try { crews = JSON.parse(localStorage.getItem("lcDemoCrews") || "[]"); } catch {}
+  crews.push({name,skills});
+  try { localStorage.setItem("lcDemoCrews", JSON.stringify(crews)); renderSavedCrews(); event.target.reset(); }
+  catch { showToast("Could not save this demo crew in this browser."); }
+});
+function renderSavedCrews() {
+  const list = document.getElementById("savedCrewList");
+  let crews = [];
+  try { crews = JSON.parse(localStorage.getItem("lcDemoCrews") || "[]"); } catch {}
+  list.replaceChildren();
+  if (!crews.length) { const li = document.createElement("li"); li.textContent = "No demo crews saved yet."; list.append(li); return; }
+  crews.forEach(crew => { const li = document.createElement("li"); li.textContent = crew.name + " — " + crew.skills; list.append(li); });
+}
+renderSavedCrews();
+document.getElementById("fairForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const wage = Number(document.getElementById("fairWage").value);
+  const days = Number(document.getElementById("fairDays").value);
+  const fee = Number(document.getElementById("fairFee").value);
+  const workerTotal = wage * days;
+  document.getElementById("fairOutput").textContent = "Worker wage: ₹" + workerTotal.toLocaleString("en-IN") + " · Separately stated platform fee: ₹" + fee.toLocaleString("en-IN") + " · Total shown: ₹" + (workerTotal + fee).toLocaleString("en-IN") + ". Agree all terms before work starts; this is an example breakdown.";
+});
+document.getElementById("matchForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const skill = document.getElementById("matchSkill").value;
+  const area = document.getElementById("matchArea").value;
+  const matches = jobCards.filter(card => card.dataset.skill.includes(skill) && (area === "all" || card.dataset.location.includes(area)));
+  document.getElementById("matchOutput").textContent = matches.length ? "Sample matches: " + matches.map(card => card.querySelector("h3").textContent + " (" + card.querySelector(".job-meta").textContent.replace("⌖ ","") + ")").join("; ") + ". These are job listings, not verified workers." : "No sample matches found. Try another skill or area.";
+});
