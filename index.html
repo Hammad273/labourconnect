@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LabourConnect helps contractors find skilled workers and helps workers discover nearby job opportunities.">
+  <title>LabourConnect — Find work. Build together.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="LabourConnect home"><span class="brand-mark">LC</span><span>Labour<span class="brand-accent">Connect</span></span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#jobs">Find jobs</a><a href="#how">How it works</a><a href="#about">About</a>
+      <button class="button button-outline" data-open="login">Log in</button>
+      <button class="button button-primary" data-open="register">Join LabourConnect</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow"><span class="dot"></span> Connecting skills with opportunity</span>
+        <h1>Good work starts<br>with the <span>right connection.</span></h1>
+        <p>Helping contractors find skilled workers and helping workers discover job opportunities around them.</p>
+        <div class="hero-actions"><a class="button button-primary button-large" href="#jobs">Explore jobs <span>→</span></a><button class="button button-light button-large" data-open="register">Join as a worker</button></div>
+        <div class="hero-note"><span>✓</span> A simpler way to connect, collaborate and get work done.</div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of a construction worker">
+        <div class="art-circle"></div><div class="art-card art-card-top"><span class="art-icon">✓</span><span><b>Skilled people</b><small>Ready to connect</small></span></div>
+        <div class="worker-illustration"><div class="helmet"></div><div class="head"></div><div class="body-shape"><i></i></div><div class="arm arm-left"></div><div class="arm arm-right"></div></div>
+        <div class="art-card art-card-bottom"><span class="pin">⌖</span><span><b>Local opportunities</b><small>Closer to your community</small></span></div>
+      </div>
+    </section>
+
+    <section class="search-panel" id="jobs">
+      <div><span class="section-kicker">OPPORTUNITIES</span><h2>Find the work you need</h2><p>Search sample job listings by skill or location.</p></div>
+      <form class="search-form" id="searchForm">
+        <label><span>Skill or job title</span><input id="skillSearch" type="search" placeholder="e.g. Electrician, Mason"></label>
+        <label><span>Location</span><input id="locationSearch" type="search" placeholder="e.g. Hyderabad"></label>
+        <button class="button button-primary" type="submit">Search jobs</button>
+      </form>
+      <div class="job-results-heading"><h3>Recent opportunities</h3><span id="resultCount" aria-live="polite">6 sample jobs</span></div>
+      <div class="job-grid" id="jobGrid">
+        <article class="job-card" data-skill="mason" data-location="hyderabad"><div class="job-top"><span class="job-tag">Construction</span><span class="job-type">Full-time</span></div><h3>Experienced Mason</h3><p class="job-meta">⌖ Kukatpally, Hyderabad</p><p class="job-description">Looking for an experienced mason for a residential building project.</p><div class="job-bottom"><strong>₹800–₹1,000 <small>/ day</small></strong><button class="text-button" data-apply="Experienced Mason">View details →</button></div></article>
+        <article class="job-card" data-skill="electrician" data-location="secunderabad"><div class="job-top"><span class="job-tag">Electrical</span><span class="job-type">Contract</span></div><h3>Electrician</h3><p class="job-meta">⌖ Secunderabad</p><p class="job-description">Need an electrician for wiring and fitting work at a new site.</p><div class="job-bottom"><strong>₹900–₹1,200 <small>/ day</small></strong><button class="text-button" data-apply="Electrician">View details →</button></div></article>
+        <article class="job-card" data-skill="painter" data-location="miyapur"><div class="job-top"><span class="job-tag">Painting</span><span class="job-type">Full-time</span></div><h3>House Painter</h3><p class="job-meta">⌖ Miyapur, Hyderabad</p><p class="job-description">Painters required for interior and exterior finishing work.</p><div class="job-bottom"><strong>₹700–₹900 <small>/ day</small></strong><button class="text-button" data-apply="House Painter">View details →</button></div></article>
+        <article class="job-card" data-skill="plumber" data-location="lb nagar"><div class="job-top"><span class="job-tag">Plumbing</span><span class="job-type">Contract</span></div><h3>Plumber</h3><p class="job-meta">⌖ LB Nagar, Hyderabad</p><p class="job-description">Plumbing professional needed for a commercial project.</p><div class="job-bottom"><strong>₹850–₹1,100 <small>/ day</small></strong><button class="text-button" data-apply="Plumber">View details →</button></div></article>
+        <article class="job-card" data-skill="carpenter" data-location="gachibowli"><div class="job-top"><span class="job-tag">Woodwork</span><span class="job-type">Part-time</span></div><h3>Carpenter</h3><p class="job-meta">⌖ Gachibowli, Hyderabad</p><p class="job-description">Carpenter required for furniture installation and repair.</p><div class="job-bottom"><strong>₹900–₹1,300 <small>/ day</small></strong><button class="text-button" data-apply="Carpenter">View details →</button></div></article>
+        <article class="job-card" data-skill="helper" data-location="uppal"><div class="job-top"><span class="job-tag">General work</span><span class="job-type">Full-time</span></div><h3>Construction Helper</h3><p class="job-meta">⌖ Uppal, Hyderabad</p><p class="job-description">Helpers wanted to support a local construction team.</p><div class="job-bottom"><strong>₹550–₹700 <small>/ day</small></strong><button class="text-button" data-apply="Construction Helper">View details →</button></div></article>
+      </div>
+      <p class="empty-state" id="emptyState" hidden>No matching sample jobs. Try another skill or location.</p>
+      <p class="demo-note">Demo content: these are sample listings, not verified or live vacancies.</p>
+    </section>
+
+    <section class="how-section" id="how"><div class="section-heading"><span class="section-kicker">SIMPLE PROCESS</span><h2>One platform. Two ways to move forward.</h2><p>Whether you're hiring or looking for work, getting started is straightforward.</p></div>
+      <div class="steps-grid"><article class="step-card"><span class="step-number">01</span><div class="step-icon">♙</div><h3>Workers create a profile</h3><p>Add your skills, experience and location so contractors can understand what you do.</p></article><article class="step-card"><span class="step-number">02</span><div class="step-icon">⌕</div><h3>Contractors find talent</h3><p>Explore worker profiles and connect with people who match the work required.</p></article><article class="step-card"><span class="step-number">03</span><div class="step-icon">↗</div><h3>Connect and get started</h3><p>Discuss the work details directly and agree on the next steps.</p></article></div>
+    </section>
+
+    <section class="about-section" id="about"><div><span class="section-kicker">OUR PURPOSE</span><h2>Making work connections easier.</h2></div><p>LabourConnect is a project concept designed to bring workers and contractors together in one place. The goal is to make opportunities easier to discover and hiring easier to organise.</p></section>
+    <section class="cta-section"><div><span class="section-kicker">GET STARTED</span><h2>Your next opportunity could start here.</h2><p>Create a demo account to explore the prototype.</p></div><button class="button button-dark button-large" data-open="register">Join LabourConnect →</button></section>
+  </main>
+
+  <footer><a class="brand footer-brand" href="#"><span class="brand-mark">LC</span><span>Labour<span class="brand-accent">Connect</span></span></a><p>Connecting skills with opportunity.</p><small>© 2026 LabourConnect · Student project prototype</small></footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Close">×</button><span class="section-kicker">LABOURCONNECT</span><h2 id="modalTitle">Create your demo account</h2><p class="modal-intro">Choose how you want to use the prototype.</p><form id="accountForm"><label>Your name<input id="accountName" required maxlength="60" placeholder="Enter your name"></label><label>Email address<input id="accountEmail" type="email" required placeholder="you@example.com"></label><label>I am a<select id="accountRole"><option value="Worker">Worker</option><option value="Contractor">Contractor</option></select></label><button class="button button-primary button-full" type="submit">Continue</button></form><p class="demo-note">Demo only: details stay in this browser. Do not enter sensitive or real account information.</p></section></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
