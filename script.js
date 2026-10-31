@@ -246,4 +246,66 @@ if (shadowForm) {
     output.textContent = "Demo request preview: you are interested in observing " + trade + " work near " + area + ". A real programme would require a confirmed slot, site-manager approval, a named adult supervisor, safety induction and appropriate protective equipment. No visit has been booked.";
   });
 }
-\n/* Digital work agreement: demo preview only, not authenticated signing */\nlet currentAgreementText = "";\nconst agreementForm = document.getElementById("agreementForm");\nconst printAgreementButton = document.getElementById("printAgreement");\nfunction escapeAgreementHTML(value) {\n  return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));\n}\nif (agreementForm) {\n  agreementForm.addEventListener("submit", event => {\n    event.preventDefault();\n    const value = id => document.getElementById(id).value.trim();\n    const contractor = value("agreementContractor");\n    const worker = value("agreementWorker");\n    const trade = value("agreementTrade");\n    const location = value("agreementLocation");\n    const wage = Number(value("agreementWage"));\n    const days = Number(value("agreementDays"));\n    if (!contractor || !worker || !trade || !location || !value("agreementPaymentDate") || wage < 1 || days < 1) return;\n    if (!document.getElementById("contractorAdult").checked || !document.getElementById("workerAdult").checked || !document.getElementById("agreementConsent").checked) {\n      document.getElementById("agreementPreview").textContent = "Both parties must be adults aged 18 or older and confirm that they freely agree. This demo cannot be used to create an agreement for a minor.";\n      printAgreementButton.disabled = true;\n      currentAgreementText = "";\n      return;\n    }\n    const total = wage * days;\n    const other = value("agreementOther") || "None stated.";\n    currentAgreementText = [\n      "LABOURCONNECT — SAMPLE WORK AGREEMENT PREVIEW",\n      "Generated on: " + new Date().toLocaleString("en-IN"),\n      "",\n      "Contractor: " + contractor,\n      "Worker: " + worker,\n      "Work / trade: " + trade,\n      "Work location: " + location,\n      "Agreed daily wage: ₹" + wage.toLocaleString("en-IN"),\n      "Expected workdays: " + days,\n      "Estimated total at the stated rate: ₹" + total.toLocaleString("en-IN"),\n      "Payment schedule: " + value("agreementSchedule"),\n      "Payment date / details: " + value("agreementPaymentDate"),\n      "Other agreed terms: " + other,\n      "",\n      "WAGE CLARITY: The stated wage is the agreed rate for the described work. Any proposed change must be discussed and recorded with the free agreement of both parties before it takes effect, and must comply with applicable law. No unlawful deduction is authorised by this document.",\n      "RECORD KEEPING: Both parties should keep their own copy and retain relevant attendance, work-completion and payment records.",\n      "DISPUTES: If wages are unpaid or unlawfully reduced, the worker may seek advice from the appropriate labour authority or a qualified lawyer. This preview does not guarantee a legal outcome and does not waive statutory rights.",\n      "",\n      "ACKNOWLEDGEMENT: The form records that both parties indicated they were adults and agreed to review these terms. This prototype does NOT authenticate identity, capture electronic signatures, or prove who clicked the checkboxes.",\n      "",\n      "IMPORTANT: SAMPLE ONLY — NOT A LAWYER-APPROVED OR AUTHENTICATED LEGAL CONTRACT. Have the wording and signing process reviewed by an Indian labour-law professional before real-world use."\n    ].join("\\n");\n    document.getElementById("agreementPreview").textContent = currentAgreementText;\n    printAgreementButton.disabled = false;\n  });\n  printAgreementButton.addEventListener("click", () => {\n    if (!currentAgreementText) return;\n    const printWindow = window.open("", "_blank", "noopener,noreferrer");\n    if (!printWindow) { showToast("Allow pop-ups to print this preview, or try again from your browser settings."); return; }\n    printWindow.document.write("<!doctype html><html><head><meta charset=\\"utf-8\\"><title>Work Agreement Preview</title><style>body{font:14px/1.6 Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#222}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}</style></head><body><pre>" + escapeAgreementHTML(currentAgreementText) + "</pre><script>window.onload=()=>window.print();<\\/script></body></html>");\n    printWindow.document.close();\n  });\n}\n
+
+/* Digital work agreement: demo preview only, not authenticated signing */
+let currentAgreementText = "";
+const agreementForm = document.getElementById("agreementForm");
+const printAgreementButton = document.getElementById("printAgreement");
+function escapeAgreementHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+}
+if (agreementForm) {
+  agreementForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const value = id => document.getElementById(id).value.trim();
+    const contractor = value("agreementContractor");
+    const worker = value("agreementWorker");
+    const trade = value("agreementTrade");
+    const location = value("agreementLocation");
+    const wage = Number(value("agreementWage"));
+    const days = Number(value("agreementDays"));
+    if (!contractor || !worker || !trade || !location || !value("agreementPaymentDate") || wage < 1 || days < 1) return;
+    if (!document.getElementById("contractorAdult").checked || !document.getElementById("workerAdult").checked || !document.getElementById("agreementConsent").checked) {
+      document.getElementById("agreementPreview").textContent = "Both parties must be adults aged 18 or older and confirm that they freely agree. This demo cannot be used to create an agreement for a minor.";
+      printAgreementButton.disabled = true;
+      currentAgreementText = "";
+      return;
+    }
+    const total = wage * days;
+    const other = value("agreementOther") || "None stated.";
+    currentAgreementText = [
+      "LABOURCONNECT — SAMPLE WORK AGREEMENT PREVIEW",
+      "Generated on: " + new Date().toLocaleString("en-IN"),
+      "",
+      "Contractor: " + contractor,
+      "Worker: " + worker,
+      "Work / trade: " + trade,
+      "Work location: " + location,
+      "Agreed daily wage: ₹" + wage.toLocaleString("en-IN"),
+      "Expected workdays: " + days,
+      "Estimated total at the stated rate: ₹" + total.toLocaleString("en-IN"),
+      "Payment schedule: " + value("agreementSchedule"),
+      "Payment date / details: " + value("agreementPaymentDate"),
+      "Other agreed terms: " + other,
+      "",
+      "WAGE CLARITY: The stated wage is the agreed rate for the described work. Any proposed change must be discussed and recorded with the free agreement of both parties before it takes effect, and must comply with applicable law. No unlawful deduction is authorised by this document.",
+      "RECORD KEEPING: Both parties should keep their own copy and retain relevant attendance, work-completion and payment records.",
+      "DISPUTES: If wages are unpaid or unlawfully reduced, the worker may seek advice from the appropriate labour authority or a qualified lawyer. This preview does not guarantee a legal outcome and does not waive statutory rights.",
+      "",
+      "ACKNOWLEDGEMENT: The form records that both parties indicated they were adults and agreed to review these terms. This prototype does NOT authenticate identity, capture electronic signatures, or prove who clicked the checkboxes.",
+      "",
+      "IMPORTANT: SAMPLE ONLY — NOT A LAWYER-APPROVED OR AUTHENTICATED LEGAL CONTRACT. Have the wording and signing process reviewed by an Indian labour-law professional before real-world use."
+    ].join("\n");
+    document.getElementById("agreementPreview").textContent = currentAgreementText;
+    printAgreementButton.disabled = false;
+  });
+  printAgreementButton.addEventListener("click", () => {
+    if (!currentAgreementText) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) { showToast("Allow pop-ups to print this preview, or try again from your browser settings."); return; }
+    printWindow.document.write("<!doctype html><html><head><meta charset=\"utf-8\"><title>Work Agreement Preview</title><style>body{font:14px/1.6 Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#222}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}</style></head><body><pre>" + escapeAgreementHTML(currentAgreementText) + "</pre></body></html>");
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  });
+}
