@@ -164,6 +164,7 @@ async function showSignedInUser(user) {
   await loadAccountProfile();
   await loadLiveJobs();
   await loadApplications();
+  await loadAgreements();
 }
 
 accountForm.addEventListener("submit", async (event) => {
@@ -568,6 +569,72 @@ async function applyToJob(jobId) {
     showToast("Application submitted.");
     await loadApplications();
   }
+}
+
+
+async function loadAgreements() {
+  const output = document.getElementById("agreementOutput");
+  const list = document.getElementById("agreementList");
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
+  list.replaceChildren();
+  if (!user) { output.textContent = "Please sign in to view agreements."; return; }
+  const { data: profile } = await supabase.from("profiles").select("role").eq("user_id", user.id).single();
+  const contractor = profile?.role === "contractor";
+  const query = supabase.from("agreements")
+    .select("agreement_id,job_id,contractor_id,worker_id,agreed_daily_wage,expected_days,payment_schedule,terms_text,status,created_at")
+    .order("created_at", {ascending:false});
+  const { data: agreements, error } = await query;
+  if (error) { output.textContent = "Could not load agreements: " + error.message; return; }
+  const mine = (agreements || []).filter(a => contractor ? a.contractor_id === user.id : a.worker_id === user.id);
+  output.textContent = mine.length ? mine.length + " agreement(s)." : "No agreements yet.";
+  if (contractor) {
+    const { data: jobs } = await supabase.from("jobs").select("job_id,job_title").eq("contractor_id", user.id);
+    const accepted = await supabase.from("applications")
+      .select("application_id,job_id,worker_id,status").eq("status","accepted");
+    const jobMap = new Map((jobs || []).map(j => [j.job_id,j.job_title]));
+    const applicants = (accepted.data || []).filter(a => jobMap.has(a.job_id));
+    const known = new Set(mine.map(a => a.job_id + ":" + a.worker_id));
+    for (const app of applicants) {
+      if (known.has(app.job_id + ":" + app.worker_id)) continue;
+      const card = document.createElement("article"); card.className = "job-card";
+      card.innerHTML = `<span class="job-tag">Accepted applicant</span><h3>${escapeJobText(jobMap.get(app.job_id))}</h3><p>Worker ID: ${escapeJobText(app.worker_id.slice(0,8))}…</p><form class="agreement-create-form tool-form" data-job="${app.job_id}" data-worker="${app.worker_id}">
+        <label>Agreed daily wage (₹)<input name="wage" type="number" min="1" max="1000000" required></label>
+        <label>Expected days<input name="days" type="number" min="1" max="3650" required></label>
+        <label>Payment schedule<input name="schedule" maxlength="100" placeholder="e.g. Weekly"></label>
+        <label>Additional terms<textarea name="terms" rows="2" maxlength="3000"></textarea></label>
+        <button class="button button-primary" type="submit">Create draft agreement</button></form>`;
+      list.append(card);
+    }
+  }
+  mine.forEach(a => {
+    const card = document.createElement("article"); card.className = "job-card";
+    card.innerHTML = `<span class="job-tag">Agreement #${a.agreement_id}</span><h3>₹${Number(a.agreed_daily_wage).toLocaleString("en-IN")} / day</h3><p>${a.expected_days} expected day(s) · ${escapeJobText(a.payment_schedule || "Payment schedule not specified")}</p><p>Status: <strong>${escapeJobText(a.status)}</strong></p><p>${escapeJobText(a.terms_text || "No additional terms.")}</p>`;
+    if (!contractor && ["draft","pending"].includes(a.status)) {
+      const accept = document.createElement("button"); accept.type="button"; accept.className="button button-primary"; accept.textContent="Accept";
+      const reject = document.createElement("button"); reject.type="button"; reject.className="text-button"; reject.textContent="Reject";
+      const respond = async status => {
+        const { error } = await supabase.from("agreements").update({status,accepted_at:new Date().toISOString()}).eq("agreement_id",a.agreement_id);
+        if (error) showToast("Could not respond: "+error.message);
+        else { showToast("Agreement "+status+"."); await loadAgreements(); }
+      };
+      accept.addEventListener("click",()=>respond("accepted")); reject.addEventListener("click",()=>respond("rejected"));
+      card.append(accept,reject);
+    }
+    list.append(card);
+  });
+  list.querySelectorAll(".agreement-create-form").forEach(form => form.addEventListener("submit",async event => {
+    event.preventDefault();
+    const fields = new FormData(form);
+    const { error } = await supabase.from("agreements").insert({
+      job_id:Number(form.dataset.job), contractor_id:user.id, worker_id:form.dataset.worker,
+      agreed_daily_wage:Number(fields.get("wage")), expected_days:Number(fields.get("days")),
+      payment_schedule:String(fields.get("schedule")||"").trim()||null,
+      terms_text:String(fields.get("terms")||"").trim()||null,status:"draft"
+    });
+    if(error) showToast("Could not create agreement: "+error.message);
+    else { showToast("Draft agreement created."); await loadAgreements(); }
+  }));
 }
 
 /* Interactive demonstrations for the ten LabourConnect features */
