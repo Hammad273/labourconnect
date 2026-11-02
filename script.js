@@ -1093,7 +1093,7 @@ async function loadAttendanceAndPayments() {
     const accepted=agreements.filter(a=>a.status==="accepted");
     const af=document.getElementById("attendanceForm");
     const pf=document.getElementById("paymentForm");
-    af.hidden=!accepted.length;
+    af.hidden=role!=="contractor"||!accepted.length;
     pf.hidden=role!=="contractor"||!accepted.length;
     fillAgreementOptions(document.getElementById("attendanceAgreement"),accepted);
     fillAgreementOptions(document.getElementById("paymentAgreement"),accepted);
