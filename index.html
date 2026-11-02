@@ -92,7 +92,24 @@
         <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Repeat teams</h3><p>Save a demo crew label for a future project plan.</p><b>Manage crews →</b></a>
         <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Site safety reminders</h3><p>Review basic reminders before work begins.</p><b>Review checklist →</b></a>
       </div>
-      <p class="dashboard-note">Dashboard cards open demo tools on this page. Accounts, job listings, worker matches and records are not connected to a live backend.</p>
+      <section class="tool-card" id="accountProfile" style="margin-top:1.5rem">
+        <h3>My account profile</h3>
+        <p>Update the profile connected to your signed-in account.</p>
+        <form id="workerProfileForm" class="tool-form">
+          <label>Main skill<input id="profileSkill" maxlength="100" required></label>
+          <label>Experience in years<input id="profileExperience" type="number" min="0" max="60" step="0.5"></label>
+          <label>Preferred work area<input id="profileArea" maxlength="120"></label>
+          <label>Languages<input id="profileLanguages" maxlength="200" placeholder="Telugu, Hindi"></label>
+          <button class="button button-primary" type="submit">Save worker profile</button>
+        </form>
+        <form id="contractorProfileForm" class="tool-form" hidden>
+          <label>Organization name<input id="profileOrganization" maxlength="150" required></label>
+          <label>Work area<input id="contractorWorkArea" maxlength="120"></label>
+          <button class="button button-primary" type="submit">Save contractor profile</button>
+        </form>
+        <p class="tool-output" id="profileOutput" aria-live="polite">Sign in to load your account profile.</p>
+      </section>
+      <p class="dashboard-note">Your account profile is connected to Supabase. Job listings, applications, attendance and payment tools are still being integrated.</p>
     </section>
 
     <section class="tools-section" id="labour-tools">
