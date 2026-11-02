@@ -127,133 +127,109 @@ document.addEventListener("keydown", (event) => {
 
 accountRole.addEventListener("change", updateAccountFields);
 
-/* Flask backend address for local development. */
-const API_BASE_URL = "http://127.0.0.1:5000";
+/* Supabase Auth: phone + password. Public publishable key only. */
+const SUPABASE_URL = "https://qpmvfruulxiosovschdk.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2CRIid36vvgj7Giq86Apcg_Zlmwkbr_";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-/* Registration and login */
-accountForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+function toE164IndianMobile(value) {
+  const digits = value.replace(/\\D/g, "");
+  if (!/^[6-9]\\d{9}$/.test(digits)) {
+    throw new Error("Enter a valid 10-digit Indian mobile number.");
+  }
+  return "+91" + digits;
+}
 
-  const mobile = accountPhone.value.trim();
-  const password = accountPassword.value;
+async function showSignedInUser(user) {
+  if (!user) return;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("user_id", user.id)
+    .single();
 
-  /* LOGIN */
-  if (accountMode === "login") {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          mobile: mobile,
-          password: password
-        })
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Login failed.");
-      }
-
-      const displayRole =
-        result.role === "contractor" ? "Contractor" : "Worker";
-
-      const signedInUser = {
-        name: result.full_name,
-        phone: mobile,
-        role: displayRole,
-        user_id: result.user_id
-      };
-
-      localStorage.setItem(
-        "labourConnectDemoUser",
-        JSON.stringify(signedInUser)
-      );
-
-      setDashboardRole(displayRole);
-      closeModal();
-      accountForm.reset();
-      updateAccountFields();
-
-      showToast("Welcome back, " + result.full_name + "!");
-
-    } catch (error) {
-      showToast(
-        error.message ||
-        "Could not connect to the server. Check that Flask is running."
-      );
-    }
-
+  if (error) {
+    showToast("Signed in, but your profile is not ready yet. Please refresh.");
     return;
   }
 
-  /* REGISTRATION */
-  const role = accountRole.value;
+  const displayRole = data.role === "contractor" ? "Contractor" : "Worker";
+  localStorage.setItem("labourConnectDemoUser", JSON.stringify({
+    name: data.full_name,
+    phone: user.phone || "",
+    role: displayRole,
+    user_id: user.id
+  }));
+  setDashboardRole(displayRole);
+}
 
-  const payload = {
-    full_name: accountName.value.trim(),
-    mobile: mobile,
-    password: password
-  };
-
-  let endpoint = "";
-
-  if (role === "worker") {
-    payload.primary_skill =
-      document.getElementById("accountPrimarySkill").value.trim();
-
-    endpoint = "/api/register/worker";
-
-  } else {
-    payload.organization_name =
-      document.getElementById("accountOrganization").value.trim();
-
-    endpoint = "/api/register/contractor";
-  }
+accountForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const mobile = accountPhone.value.trim();
+  const password = accountPassword.value;
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify(payload)
-    });
+    const phone = toE164IndianMobile(mobile);
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "Registration failed.");
+    if (accountMode === "login") {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        phone,
+        password
+      });
+      if (error) throw error;
+      await showSignedInUser(data.user);
+      closeModal();
+      accountForm.reset();
+      updateAccountFields();
+      showToast("Welcome back!");
+      return;
     }
 
-    const registeredName = payload.full_name;
+    const role = accountRole.value;
+    const fullName = accountName.value.trim();
+    const extra = role === "worker"
+      ? { primary_skill: document.getElementById("accountPrimarySkill").value.trim() }
+      : { organization_name: document.getElementById("accountOrganization").value.trim() };
+
+    const { data, error } = await supabase.auth.signUp({
+      phone,
+      password,
+      options: {
+        data: { full_name: fullName, role, ...extra }
+      }
+    });
+    if (error) throw error;
 
     accountForm.reset();
     accountRole.value = "worker";
     accountMode = "login";
     updateAccountFields();
-
     backdrop.hidden = false;
     accountPhone.value = mobile;
     accountPassword.focus();
 
-    showToast(
-      "Registration successful, " +
-      registeredName +
-      ". Please log in."
-    );
-
+    showToast(data.session
+      ? "Account created. You are signed in."
+      : "Account created. Complete phone verification if prompted, then log in.");
+    if (data.session) await showSignedInUser(data.user);
   } catch (error) {
-    showToast(
-      error.message ||
-      "Could not connect to the server. Check that Flask is running."
-    );
+    showToast(error.message || "Authentication failed. Please try again.");
   }
 });
+
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    await showSignedInUser(session.user);
+  }
+});
+
+async function restoreLoginSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (!error && data.session?.user) {
+    await showSignedInUser(data.session.user);
+  }
+}
+restoreLoginSession();
 
 document.querySelectorAll("[data-apply]").forEach((button) => {
   button.addEventListener("click", () => {
