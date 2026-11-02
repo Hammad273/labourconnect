@@ -133,8 +133,8 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2CRIid36vvgj7Giq86Apcg_Zlmwkbr_
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 function toE164IndianMobile(value) {
-  const digits = value.replace(/\\D/g, "");
-  if (!/^[6-9]\\d{9}$/.test(digits)) {
+  const digits = value.replace(/\D/g, "");
+  if (!/^[6-9]\d{9}$/.test(digits)) {
     throw new Error("Enter a valid 10-digit Indian mobile number.");
   }
   return "+91" + digits;
