@@ -217,9 +217,9 @@ accountForm.addEventListener("submit", async (event) => {
   }
 });
 
-supabase.auth.onAuthStateChange(async (event, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
-    await showSignedInUser(session.user);
+    Promise.resolve().then(() => showSignedInUser(session.user));
   }
 });
 
