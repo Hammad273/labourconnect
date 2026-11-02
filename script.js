@@ -1,3 +1,4 @@
+(function () {
 const searchForm = document.getElementById("searchForm");
 const skillSearch = document.getElementById("skillSearch");
 const locationSearch = document.getElementById("locationSearch");
@@ -1149,3 +1150,5 @@ document.getElementById("paymentForm").addEventListener("submit",async event=>{
   if(error)showToast("Could not save payment record: "+error.message);
   else{showToast("Wage record saved. No money was transferred.");document.getElementById("paymentForm").reset();await loadAttendanceAndPayments();}
 });
+
+})();
