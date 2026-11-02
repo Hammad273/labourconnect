@@ -161,6 +161,7 @@ async function showSignedInUser(user) {
     user_id: user.id
   }));
   setDashboardRole(displayRole);
+  await loadAccountProfile();
 }
 
 accountForm.addEventListener("submit", async (event) => {
@@ -355,6 +356,70 @@ document.getElementById("languageSelect").addEventListener("change", e => {
   setLanguage(e.target.value);
 });
 
+
+
+/* Supabase-backed profile management */
+async function loadAccountProfile() {
+  const output = document.getElementById("profileOutput");
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
+  if (!user) {
+    output.textContent = "Sign in to load your account profile.";
+    return;
+  }
+  const { data: base, error: baseError } = await supabase
+    .from("profiles").select("role").eq("user_id", user.id).single();
+  if (baseError) { output.textContent = baseError.message; return; }
+
+  const workerForm = document.getElementById("workerProfileForm");
+  const contractorForm = document.getElementById("contractorProfileForm");
+  workerForm.hidden = base.role !== "worker";
+  contractorForm.hidden = base.role !== "contractor";
+
+  if (base.role === "worker") {
+    const { data, error } = await supabase.from("worker_profiles")
+      .select("primary_skill,experience_years,preferred_area,languages")
+      .eq("user_id", user.id).single();
+    if (error) { output.textContent = error.message; return; }
+    document.getElementById("profileSkill").value = data.primary_skill || "";
+    document.getElementById("profileExperience").value = data.experience_years ?? 0;
+    document.getElementById("profileArea").value = data.preferred_area || "";
+    document.getElementById("profileLanguages").value = data.languages || "";
+  } else {
+    const { data, error } = await supabase.from("contractor_profiles")
+      .select("organization_name,work_area").eq("user_id", user.id).single();
+    if (error) { output.textContent = error.message; return; }
+    document.getElementById("profileOrganization").value = data.organization_name || "";
+    document.getElementById("contractorWorkArea").value = data.work_area || "";
+  }
+  output.textContent = "Profile loaded from your Supabase account.";
+}
+document.getElementById("workerProfileForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) { showToast("Please sign in first."); return; }
+  const { error } = await supabase.from("worker_profiles").update({
+    primary_skill: document.getElementById("profileSkill").value.trim(),
+    experience_years: Number(document.getElementById("profileExperience").value || 0),
+    preferred_area: document.getElementById("profileArea").value.trim(),
+    languages: document.getElementById("profileLanguages").value.trim()
+  }).eq("user_id", authData.user.id);
+  document.getElementById("profileOutput").textContent = error
+    ? "Could not save profile: " + error.message
+    : "Worker profile saved successfully.";
+});
+document.getElementById("contractorProfileForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) { showToast("Please sign in first."); return; }
+  const { error } = await supabase.from("contractor_profiles").update({
+    organization_name: document.getElementById("profileOrganization").value.trim(),
+    work_area: document.getElementById("contractorWorkArea").value.trim()
+  }).eq("user_id", authData.user.id);
+  document.getElementById("profileOutput").textContent = error
+    ? "Could not save profile: " + error.message
+    : "Contractor profile saved successfully.";
+});
 
 /* Interactive demonstrations for the ten LabourConnect features */
 
