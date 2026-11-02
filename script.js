@@ -165,6 +165,7 @@ async function showSignedInUser(user) {
   await loadLiveJobs();
   await loadApplications();
   await loadAgreements();
+  await loadAttendanceAndPayments();
 }
 
 accountForm.addEventListener("submit", async (event) => {
@@ -1058,3 +1059,93 @@ if (agreementForm) {
     printWindow.print();
   });
 }
+
+/* Supabase-backed attendance and wage record management (no money transfers). */
+async function getMyAgreements() {
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) return { user:null, agreements:[], role:null };
+  const { data: profile } = await supabase.from("profiles").select("role").eq("user_id",authData.user.id).single();
+  const column = profile?.role === "contractor" ? "contractor_id" : "worker_id";
+  const { data, error } = await supabase.from("agreements")
+    .select("agreement_id,job_id,contractor_id,worker_id,agreed_daily_wage,expected_days,status,created_at")
+    .eq(column,authData.user.id).order("created_at",{ascending:false});
+  if(error) throw error;
+  return {user:authData.user,agreements:data||[],role:profile?.role};
+}
+function fillAgreementOptions(select, agreements) {
+  select.replaceChildren();
+  agreements.filter(a=>a.status==="accepted").forEach(a=>{
+    const option=document.createElement("option");
+    option.value=a.agreement_id;
+    option.textContent="Agreement #"+a.agreement_id+" · ₹"+Number(a.agreed_daily_wage).toLocaleString("en-IN")+"/day";
+    select.append(option);
+  });
+  select.disabled=!select.options.length;
+}
+async function loadAttendanceAndPayments() {
+  const ao=document.getElementById("attendanceOutput");
+  const al=document.getElementById("attendanceList");
+  const po=document.getElementById("paymentOutput");
+  const pl=document.getElementById("paymentList");
+  try {
+    const {user,agreements,role}=await getMyAgreements();
+    if(!user){ao.textContent="Sign in to view attendance records.";po.textContent="Sign in to view wage records.";return;}
+    const accepted=agreements.filter(a=>a.status==="accepted");
+    const af=document.getElementById("attendanceForm");
+    const pf=document.getElementById("paymentForm");
+    af.hidden=!accepted.length;
+    pf.hidden=role!=="contractor"||!accepted.length;
+    fillAgreementOptions(document.getElementById("attendanceAgreement"),accepted);
+    fillAgreementOptions(document.getElementById("paymentAgreement"),accepted);
+    const ids=agreements.map(a=>a.agreement_id);
+    if(!ids.length){ao.textContent="No work agreements yet.";po.textContent="No work agreements yet.";return;}
+    const [{data:attendance,error:ae},{data:payments,error:pe}]=await Promise.all([
+      supabase.from("attendance").select("attendance_id,agreement_id,work_date,attendance_status,notes").in("agreement_id",ids).order("work_date",{ascending:false}),
+      supabase.from("payments").select("payment_id,agreement_id,amount,payment_date,payment_method,status,notes").in("agreement_id",ids).order("payment_date",{ascending:false})
+    ]);
+    if(ae) throw ae;if(pe) throw pe;
+    al.replaceChildren();pl.replaceChildren();
+    (attendance||[]).forEach(row=>{
+      const card=document.createElement("article");card.className="job-card";
+      const date=escapeJobText(row.work_date);
+      card.innerHTML="<h3>Agreement #"+Number(row.agreement_id)+"</h3><p class='job-meta'>"+date+"</p><p>"+escapeJobText(row.attendance_status.replace("_"," "))+"</p><p>"+escapeJobText(row.notes||"")+"</p>";
+      al.append(card);
+    });
+    (payments||[]).forEach(row=>{
+      const card=document.createElement("article");card.className="job-card";
+      card.innerHTML="<h3>₹"+Number(row.amount).toLocaleString("en-IN")+"</h3><p class='job-meta'>Agreement #"+Number(row.agreement_id)+" · "+escapeJobText(row.payment_date||"Date not set")+"</p><p>Status: "+escapeJobText(row.status)+"</p><p>"+escapeJobText(row.payment_method||"")+" "+escapeJobText(row.notes||"")+"</p>";
+      pl.append(card);
+    });
+    ao.textContent=(attendance||[]).length+" attendance record(s).";
+    po.textContent=(payments||[]).length+" wage payment record(s).";
+  } catch(error){ao.textContent="Could not load attendance: "+error.message;po.textContent="Could not load payments: "+error.message;}
+}
+document.getElementById("attendanceForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const {data:authData}=await supabase.auth.getUser();
+  if(!authData.user){showToast("Please sign in first.");return;}
+  const agreementId=Number(document.getElementById("attendanceAgreement").value);
+  const {error}=await supabase.from("attendance").insert({
+    agreement_id:agreementId,
+    work_date:document.getElementById("attendanceDate").value,
+    attendance_status:document.getElementById("attendanceStatus").value,
+    notes:document.getElementById("attendanceNotes").value.trim()||null
+  });
+  if(error)showToast("Could not save attendance: "+error.message);
+  else{showToast("Attendance record saved.");document.getElementById("attendanceNotes").value="";await loadAttendanceAndPayments();}
+});
+document.getElementById("paymentForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const {data:authData}=await supabase.auth.getUser();
+  if(!authData.user){showToast("Please sign in first.");return;}
+  const {error}=await supabase.from("payments").insert({
+    agreement_id:Number(document.getElementById("paymentAgreement").value),
+    amount:Number(document.getElementById("paymentAmount").value),
+    payment_date:document.getElementById("paymentDate").value,
+    payment_method:document.getElementById("paymentMethod").value.trim()||null,
+    status:document.getElementById("paymentStatusRecord").value,
+    notes:document.getElementById("paymentNotes").value.trim()||null
+  });
+  if(error)showToast("Could not save payment record: "+error.message);
+  else{showToast("Wage record saved. No money was transferred.");document.getElementById("paymentForm").reset();await loadAttendanceAndPayments();}
+});
