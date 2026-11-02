@@ -92,6 +92,26 @@
         <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Repeat teams</h3><p>Save a demo crew label for a future project plan.</p><b>Manage crews →</b></a>
         <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Site safety reminders</h3><p>Review basic reminders before work begins.</p><b>Review checklist →</b></a>
       </div>
+      <section class="tool-card" id="jobManagement" style="margin-top:1.5rem">
+        <h3>Live job board</h3>
+        <p>Signed-in users can browse open jobs. Contractor accounts can post and manage their own listings.</p>
+        <form id="createJobForm" class="tool-form" hidden>
+          <label>Job title<input id="newJobTitle" maxlength="150" required placeholder="Electrician required"></label>
+          <label>Description<textarea id="newJobDescription" maxlength="3000" rows="3"></textarea></label>
+          <label>Work location<input id="newJobLocation" maxlength="150" required placeholder="Kukatpally, Hyderabad"></label>
+          <div class="mini-fields">
+            <label>Daily wage (₹)<input id="newJobWage" type="number" min="1" max="1000000" required></label>
+            <label>Workers required<input id="newJobCount" type="number" min="1" max="500" value="1" required></label>
+          </div>
+          <div class="mini-fields">
+            <label>Start date<input id="newJobStart" type="date"></label>
+            <label>End date<input id="newJobEnd" type="date"></label>
+          </div>
+          <button class="button button-primary" type="submit">Post job</button>
+        </form>
+        <p class="tool-output" id="jobOutput" aria-live="polite">Sign in to load live jobs.</p>
+        <div id="liveJobList" class="job-grid"></div>
+      </section>
       <section class="tool-card" id="accountProfile" style="margin-top:1.5rem">
         <h3>My account profile</h3>
         <p>Update the profile connected to your signed-in account.</p>
