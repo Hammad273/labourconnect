@@ -163,6 +163,7 @@ async function showSignedInUser(user) {
   setDashboardRole(displayRole);
   await loadAccountProfile();
   await loadLiveJobs();
+  await loadApplications();
 }
 
 accountForm.addEventListener("submit", async (event) => {
@@ -463,11 +464,11 @@ async function loadLiveJobs() {
       <p class="job-description">${escapeJobText(job.description || "No additional description.")}</p>
       <div class="job-bottom"><strong>₹${Number(job.daily_wage).toLocaleString("en-IN")} <small>/ day</small></strong><span>${Number(job.workers_required)} worker(s)</span></div>
       ${job.start_date ? `<p class="job-meta">Start: ${escapeJobText(job.start_date)}</p>` : ""}
-      ${own ? `<button class="text-button" type="button" data-close-job="${job.job_id}">Close listing</button>` : ""}
+      ${own ? `<button class="text-button" type="button" data-close-job="${job.job_id}">Close listing</button>` : `<button class="text-button" type="button" data-apply-job="${job.job_id}">Apply for this job</button>` }
     `;
     list.append(card);
   });
-  list.querySelectorAll("[data-close-job]").forEach(button => {
+  list.querySelectorAll("[data-apply-job]").forEach(button => button.addEventListener("click", () => applyToJob(button.dataset.applyJob)));\n  list.querySelectorAll("[data-close-job]").forEach(button => {
     button.addEventListener("click", async () => {
       const id = Number(button.dataset.closeJob);
       const { error } = await supabase.from("jobs")
@@ -503,6 +504,71 @@ document.getElementById("createJobForm").addEventListener("submit", async event 
   showToast("Job posted successfully.");
   await loadLiveJobs();
 });
+
+
+async function loadApplications() {
+  const output = document.getElementById("applicationOutput");
+  const list = document.getElementById("applicationList");
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
+  list.replaceChildren();
+  if (!user) { output.textContent = "Please sign in to manage applications."; return; }
+  const { data: profile } = await supabase.from("profiles").select("role").eq("user_id", user.id).single();
+  if (profile?.role === "worker") {
+    const { data: apps, error } = await supabase.from("applications")
+      .select("application_id,status,applied_at,job_id,jobs(job_title,work_location,daily_wage)")
+      .eq("worker_id", user.id).order("applied_at", { ascending: false });
+    if (error) { output.textContent = "Could not load your applications: " + error.message; return; }
+    output.textContent = apps.length ? "Your applications" : "You have not applied to any jobs yet.";
+    apps.forEach(app => {
+      const job = app.jobs || {};
+      const card = document.createElement("article"); card.className = "job-card";
+      card.innerHTML = `<span class="job-tag">Application</span><h3>${escapeJobText(job.job_title || "Job listing")}</h3><p class="job-meta">${escapeJobText(job.work_location || "")}</p><p>Status: <strong>${escapeJobText(app.status)}</strong></p>`;
+      list.append(card);
+    });
+    return;
+  }
+  if (profile?.role !== "contractor") { output.textContent = "This account cannot manage applications."; return; }
+  const { data: jobs, error: jobsError } = await supabase.from("jobs")
+    .select("job_id,job_title").eq("contractor_id", user.id);
+  if (jobsError) { output.textContent = "Could not load your jobs: " + jobsError.message; return; }
+  const ids = (jobs || []).map(job => job.job_id);
+  if (!ids.length) { output.textContent = "Post a job first to receive applications."; return; }
+  const { data: apps, error } = await supabase.from("applications")
+    .select("application_id,worker_id,status,applied_at,job_id")
+    .in("job_id", ids).order("applied_at", { ascending: false });
+  if (error) { output.textContent = "Could not load applications: " + error.message; return; }
+  if (!apps?.length) { output.textContent = "No applications received yet."; return; }
+  const names = await supabase.from("profiles").select("user_id,full_name").in("user_id", [...new Set(apps.map(a => a.worker_id))]);
+  const nameMap = new Map((names.data || []).map(p => [p.user_id, p.full_name]));
+  const jobMap = new Map(jobs.map(j => [j.job_id, j.job_title]));
+  output.textContent = apps.length + " application(s) received.";
+  apps.forEach(app => {
+    const card = document.createElement("article"); card.className = "job-card";
+    const name = nameMap.get(app.worker_id) || "Worker";
+    card.innerHTML = `<span class="job-tag">Application #${app.application_id}</span><h3>${escapeJobText(name)}</h3><p class="job-meta">${escapeJobText(jobMap.get(app.job_id) || "Your job")}</p><p>Status: <strong>${escapeJobText(app.status)}</strong></p><label>Update status <select data-app-status="${app.application_id}"><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>`;
+    const select = card.querySelector("select"); select.value = app.status;
+    select.addEventListener("change", async () => {
+      const { error } = await supabase.from("applications").update({status:select.value}).eq("application_id", app.application_id);
+      if (error) { showToast("Could not update application: " + error.message); select.value = app.status; }
+      else { showToast("Application status updated."); app.status = select.value; }
+    });
+    list.append(card);
+  });
+}
+async function applyToJob(jobId) {
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) { showToast("Please sign in as a worker to apply."); return; }
+  const { data: profile } = await supabase.from("profiles").select("role").eq("user_id", authData.user.id).single();
+  if (profile?.role !== "worker") { showToast("Only worker accounts can apply."); return; }
+  const { error } = await supabase.from("applications").insert({job_id:Number(jobId),worker_id:authData.user.id});
+  if (error) {
+    showToast(error.code === "23505" ? "You have already applied to this job." : "Could not apply: " + error.message);
+  } else {
+    showToast("Application submitted.");
+    await loadApplications();
+  }
+}
 
 /* Interactive demonstrations for the ten LabourConnect features */
 
