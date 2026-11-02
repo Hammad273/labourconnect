@@ -37,7 +37,7 @@ const backdrop = document.getElementById("modalBackdrop");
 const modalTitle = document.getElementById("modalTitle");
 const accountForm = document.getElementById("accountForm");
 const accountName = document.getElementById("accountName");
-const accountPhone = document.getElementById("accountPhone");
+const accountEmail = document.getElementById("accountEmail");
 const accountPassword = document.getElementById("accountPassword");
 const accountRole = document.getElementById("accountRole");
 
@@ -61,7 +61,7 @@ function updateAccountFields() {
   accountRole.closest("label").hidden = isLogin;
 
   accountName.required = !isLogin;
-  accountPhone.required = true;
+  accountEmail.required = true;
   accountPassword.required = true;
 
   if (isLogin) {
@@ -105,7 +105,7 @@ function openModal(mode) {
 
   backdrop.hidden = false;
 
-  (accountMode === "login" ? accountPhone : accountName).focus();
+  (accountMode === "login" ? accountEmail : accountName).focus();
 }
 
 function closeModal() {
@@ -128,18 +128,10 @@ document.addEventListener("keydown", (event) => {
 
 accountRole.addEventListener("change", updateAccountFields);
 
-/* Supabase Auth: phone + password. Public publishable key only. */
+/* Supabase Auth: email + password. Public publishable key only. */
 const SUPABASE_URL = "https://qpmvfruulxiosovschdk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2CRIid36vvgj7Giq86Apcg_Zlmwkbr_";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-function toE164IndianMobile(value) {
-  const digits = value.replace(/\D/g, "");
-  if (!/^[6-9]\d{9}$/.test(digits)) {
-    throw new Error("Enter a valid 10-digit Indian mobile number.");
-  }
-  return "+91" + digits;
-}
 
 async function showSignedInUser(user) {
   if (!user) return;
@@ -157,7 +149,7 @@ async function showSignedInUser(user) {
   const displayRole = data.role === "contractor" ? "Contractor" : "Worker";
   localStorage.setItem("labourConnectDemoUser", JSON.stringify({
     name: data.full_name,
-    phone: user.phone || "",
+    email: user.email || "",
     role: displayRole,
     user_id: user.id
   }));
@@ -171,15 +163,13 @@ async function showSignedInUser(user) {
 
 accountForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const mobile = accountPhone.value.trim();
+  const email = accountEmail.value.trim().toLowerCase();
   const password = accountPassword.value;
 
   try {
-    const phone = toE164IndianMobile(mobile);
-
     if (accountMode === "login") {
       const { data, error } = await supabase.auth.signInWithPassword({
-        phone,
+        email,
         password
       });
       if (error) throw error;
@@ -198,7 +188,7 @@ accountForm.addEventListener("submit", async (event) => {
       : { organization_name: document.getElementById("accountOrganization").value.trim() };
 
     const { data, error } = await supabase.auth.signUp({
-      phone,
+      email,
       password,
       options: {
         data: { full_name: fullName, role, ...extra }
@@ -211,7 +201,7 @@ accountForm.addEventListener("submit", async (event) => {
     accountMode = "login";
     updateAccountFields();
     backdrop.hidden = false;
-    accountPhone.value = mobile;
+    accountEmail.value = email;
     accountPassword.focus();
 
     showToast(data.session
@@ -262,7 +252,7 @@ navLinks.querySelectorAll("a").forEach((link) => {
 const translations = {
   en: {
     findJobs:"Find jobs", howWorks:"How it works", about:"About",
-    mobileLabel:"Mobile number",
+    emailLabel:"Email address",
     heroTitle:"Good work starts with the right connection.",
     heroText:"Helping contractors find skilled workers and helping workers discover job opportunities around them.",
     explore:"Explore jobs", joinWorker:"Join as a worker",
@@ -274,11 +264,11 @@ const translations = {
     purpose:"OUR PURPOSE",
     purposeTitle:"Making work connections easier.",
     getStarted:"GET STARTED", join:"Join LabourConnect",
-    mobilePlaceholder:"10-digit mobile number"
+    emailPlaceholder:"you@example.com"
   },
   hi: {
     findJobs:"काम खोजें", howWorks:"यह कैसे काम करता है", about:"हमारे बारे में",
-    mobileLabel:"मोबाइल नंबर",
+    emailLabel:"ईमेल पता",
     heroTitle:"अच्छा काम सही संपर्क से शुरू होता है।",
     heroText:"ठेकेदारों को कुशल मजदूर खोजने और मजदूरों को आसपास काम ढूँढ़ने में मदद।",
     explore:"काम देखें", joinWorker:"मजदूर के रूप में जुड़ें",
@@ -290,11 +280,11 @@ const translations = {
     purpose:"हमारा उद्देश्य",
     purposeTitle:"काम के संपर्क आसान बनाना।",
     getStarted:"शुरू करें", join:"LabourConnect से जुड़ें",
-    mobilePlaceholder:"10 अंकों का मोबाइल नंबर"
+    emailPlaceholder:"you@example.com"
   },
   te: {
     findJobs:"పనులు వెతకండి", howWorks:"ఇది ఎలా పనిచేస్తుంది", about:"మా గురించి",
-    mobileLabel:"మొబైల్ నంబర్",
+    emailLabel:"ఇమెయిల్ చిరునామా",
     heroTitle:"మంచి పని సరైన పరిచయంతో ప్రారంభమవుతుంది.",
     heroText:"కాంట్రాక్టర్లు నైపుణ్యం కలిగిన కార్మికులను కనుగొనడానికి, కార్మికులు సమీపంలో పనులు వెతకడానికి సహాయం.",
     explore:"పనులు చూడండి", joinWorker:"కార్మికుడిగా చేరండి",
@@ -307,7 +297,7 @@ const translations = {
     purpose:"మా లక్ష్యం",
     purposeTitle:"పని అవకాశాల పరిచయాలను సులభతరం చేయడం.",
     getStarted:"ప్రారంభించండి", join:"LabourConnectలో చేరండి",
-    mobilePlaceholder:"10 అంకెల మొబైల్ నంబర్"
+    emailPlaceholder:"you@example.com"
   }
 };
 
@@ -350,11 +340,8 @@ function setLanguage(lang) {
     if (el.textContent.includes("Join LabourConnect")) el.textContent = t.join;
   });
 
-  const mobile = document.querySelector("#accountForm label");
-  const mobileInput = document.getElementById("accountPhone");
-
-  if (mobile) mobile.childNodes[0].textContent = t.mobileLabel;
-  if (mobileInput) mobileInput.placeholder = t.mobilePlaceholder;
+  const emailInput = document.getElementById("accountEmail");
+  if (emailInput) emailInput.placeholder = "you@example.com";
 }
 
 document.getElementById("languageSelect").addEventListener("change", e => {
