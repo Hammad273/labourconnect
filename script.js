@@ -639,29 +639,6 @@ try {
 } catch {}
 
 setDashboardRole(preferredDashboard);
-async function restoreLoginSession() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/me`, {
-      method: "GET",
-      credentials: "include"
-    });
-
-    if (!response.ok) return;
-
-    const user = await response.json();
-
-    localStorage.setItem("labourConnectDemoUser", JSON.stringify(user));
-    setDashboardRole(user.role);
-    document.getElementById("dashboards").scrollIntoView({
-  behavior: "smooth"
-});
-  } catch (error) {
-    console.error("Session restoration failed:", error);
-  }
-}
-
-restoreLoginSession();
-
 
 /* Supervised crew-observation learning preview */
 
