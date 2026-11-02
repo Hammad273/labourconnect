@@ -162,6 +162,7 @@ async function showSignedInUser(user) {
   }));
   setDashboardRole(displayRole);
   await loadAccountProfile();
+  await loadLiveJobs();
 }
 
 accountForm.addEventListener("submit", async (event) => {
@@ -419,6 +420,88 @@ document.getElementById("contractorProfileForm").addEventListener("submit", asyn
   document.getElementById("profileOutput").textContent = error
     ? "Could not save profile: " + error.message
     : "Contractor profile saved successfully.";
+});
+
+
+/* Supabase-backed job board and contractor job management */
+function escapeJobText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+async function loadLiveJobs() {
+  const output = document.getElementById("jobOutput");
+  const list = document.getElementById("liveJobList");
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
+  if (!user) {
+    output.textContent = "Please sign in to browse live jobs.";
+    list.replaceChildren();
+    return;
+  }
+  const { data: profile } = await supabase.from("profiles")
+    .select("role").eq("user_id", user.id).single();
+  document.getElementById("createJobForm").hidden = profile?.role !== "contractor";
+  const { data: jobs, error } = await supabase.from("jobs")
+    .select("job_id,contractor_id,job_title,description,work_location,daily_wage,workers_required,start_date,end_date,status,created_at")
+    .eq("status", "open").order("created_at", { ascending: false });
+  if (error) { output.textContent = "Could not load jobs: " + error.message; return; }
+  list.replaceChildren();
+  if (!jobs?.length) {
+    output.textContent = "No open jobs yet. Contractors can post the first listing.";
+    return;
+  }
+  output.textContent = jobs.length + " open job(s) available.";
+  jobs.forEach(job => {
+    const card = document.createElement("article");
+    card.className = "job-card";
+    const own = job.contractor_id === user.id;
+    card.innerHTML = `
+      <div class="job-top"><span class="job-tag">Live listing</span><span class="job-type">${own ? "Your job" : "Open"}</span></div>
+      <h3>${escapeJobText(job.job_title)}</h3>
+      <p class="job-meta">⌖ ${escapeJobText(job.work_location)}</p>
+      <p class="job-description">${escapeJobText(job.description || "No additional description.")}</p>
+      <div class="job-bottom"><strong>₹${Number(job.daily_wage).toLocaleString("en-IN")} <small>/ day</small></strong><span>${Number(job.workers_required)} worker(s)</span></div>
+      ${job.start_date ? `<p class="job-meta">Start: ${escapeJobText(job.start_date)}</p>` : ""}
+      ${own ? `<button class="text-button" type="button" data-close-job="${job.job_id}">Close listing</button>` : ""}
+    `;
+    list.append(card);
+  });
+  list.querySelectorAll("[data-close-job]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const id = Number(button.dataset.closeJob);
+      const { error } = await supabase.from("jobs")
+        .update({ status: "closed" }).eq("job_id", id).eq("contractor_id", user.id);
+      if (error) showToast("Could not close job: " + error.message);
+      else { showToast("Job listing closed."); await loadLiveJobs(); }
+    });
+  });
+}
+document.getElementById("createJobForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) { showToast("Please sign in as a contractor."); return; }
+  const title = document.getElementById("newJobTitle").value.trim();
+  const location = document.getElementById("newJobLocation").value.trim();
+  const wage = Number(document.getElementById("newJobWage").value);
+  const count = Number(document.getElementById("newJobCount").value);
+  const start = document.getElementById("newJobStart").value || null;
+  const end = document.getElementById("newJobEnd").value || null;
+  if (end && start && end < start) { showToast("End date cannot be before start date."); return; }
+  const { error } = await supabase.from("jobs").insert({
+    contractor_id: authData.user.id,
+    job_title: title,
+    description: document.getElementById("newJobDescription").value.trim(),
+    work_location: location,
+    daily_wage: wage,
+    workers_required: count,
+    start_date: start,
+    end_date: end
+  });
+  if (error) { document.getElementById("jobOutput").textContent = "Could not post job: " + error.message; return; }
+  event.target.reset();
+  showToast("Job posted successfully.");
+  await loadLiveJobs();
 });
 
 /* Interactive demonstrations for the ten LabourConnect features */
