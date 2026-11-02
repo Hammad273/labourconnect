@@ -124,6 +124,40 @@
         <p class="tool-output" id="applicationOutput" aria-live="polite">Sign in to manage applications.</p>
         <div id="applicationList" class="job-grid"></div>
       </section>
+      <section class="tool-card" id="attendanceManagement" style="margin-top:1.5rem">
+        <h3>Attendance records</h3>
+        <p>Record attendance against an accepted work agreement. Both parties can review these records.</p>
+        <form id="attendanceForm" class="tool-form" hidden>
+          <label>Work agreement<select id="attendanceAgreement" required></select></label>
+          <div class="mini-fields">
+            <label>Work date<input id="attendanceDate" type="date" required></label>
+            <label>Status<select id="attendanceStatus"><option value="present">Present</option><option value="absent">Absent</option><option value="half_day">Half day</option></select></label>
+          </div>
+          <label>Notes (optional)<input id="attendanceNotes" maxlength="200"></label>
+          <button class="button button-primary" type="submit">Save attendance</button>
+        </form>
+        <p class="tool-output" id="attendanceOutput" aria-live="polite">Sign in to view attendance records.</p>
+        <div id="attendanceList" class="job-grid"></div>
+      </section>
+      <section class="tool-card" id="paymentManagement" style="margin-top:1.5rem">
+        <h3>Wage payment records</h3>
+        <p>Record payments already made or view the payment history for an agreement. This does not transfer money.</p>
+        <form id="paymentForm" class="tool-form" hidden>
+          <label>Work agreement<select id="paymentAgreement" required></select></label>
+          <div class="mini-fields">
+            <label>Amount (₹)<input id="paymentAmount" type="number" min="1" max="10000000" required></label>
+            <label>Payment date<input id="paymentDate" type="date" required></label>
+          </div>
+          <div class="mini-fields">
+            <label>Method<input id="paymentMethod" maxlength="40" placeholder="Cash / bank transfer"></label>
+            <label>Status<select id="paymentStatusRecord"><option value="paid">Paid</option><option value="pending">Pending</option><option value="failed">Failed</option></select></label>
+          </div>
+          <label>Notes (optional)<input id="paymentNotes" maxlength="200"></label>
+          <button class="button button-primary" type="submit">Save payment record</button>
+        </form>
+        <p class="tool-output" id="paymentOutput" aria-live="polite">Sign in to view wage records.</p>
+        <div id="paymentList" class="job-grid"></div>
+      </section>
       <section class="tool-card" id="accountProfile" style="margin-top:1.5rem">
         <h3>My account profile</h3>
         <p>Update the profile connected to your signed-in account.</p>
