@@ -469,7 +469,8 @@ async function loadLiveJobs() {
     `;
     list.append(card);
   });
-  list.querySelectorAll("[data-apply-job]").forEach(button => button.addEventListener("click", () => applyToJob(button.dataset.applyJob)));\n  list.querySelectorAll("[data-close-job]").forEach(button => {
+  list.querySelectorAll("[data-apply-job]").forEach(button => button.addEventListener("click", () => applyToJob(button.dataset.applyJob)));
+  list.querySelectorAll("[data-close-job]").forEach(button => {
     button.addEventListener("click", async () => {
       const id = Number(button.dataset.closeJob);
       const { error } = await supabase.from("jobs")
