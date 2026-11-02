@@ -214,7 +214,7 @@ accountForm.addEventListener("submit", async (event) => {
 
     showToast(data.session
       ? "Account created. You are signed in."
-      : "Account created. Complete phone verification if prompted, then log in.");
+      : "Account created, but no session was returned. Check that phone confirmation is disabled in Supabase Auth settings before logging in.");
     if (data.session) await showSignedInUser(data.user);
   } catch (error) {
     showToast(error.message || "Authentication failed. Please try again.");
