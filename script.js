@@ -132,7 +132,53 @@ accountRole.addEventListener("change", updateAccountFields);
 const SUPABASE_URL = "https://qpmvfruulxiosovschdk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2CRIid36vvgj7Giq86Apcg_Zlmwkbr_";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+function setAuthenticatedUI(isSignedIn) {
+  const dashboardSection = document.getElementById("dashboards");
+  const logoutButton = document.getElementById("logoutButton");
 
+  if (dashboardSection) dashboardSection.hidden = !isSignedIn;
+  if (logoutButton) logoutButton.hidden = !isSignedIn;
+
+  const protectedSections = ["jobs", "how", "labour-tools"];
+
+  protectedSections.forEach(id => {
+    const section = document.getElementById(id);
+    if (section) section.hidden = !isSignedIn;
+  });
+    const dashboardSwitch = document.querySelector(".dashboard-switch");
+
+  if (dashboardSwitch) {
+    dashboardSwitch.hidden = isSignedIn;
+  }
+}
+const logoutButton = document.getElementById("logoutButton");
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        showToast("Unable to log out. Please try again.");
+        return;
+      }
+
+      localStorage.removeItem("labourConnectDemoUser");
+      localStorage.removeItem("lcDashboardRole");
+
+      setAuthenticatedUI(false);
+      showToast("You have been logged out.");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      showToast("Something went wrong while logging out.");
+    } finally {
+      logoutButton.disabled = false;
+    }
+  });
+}
 async function showSignedInUser(user) {
   if (!user) return;
   const { data, error } = await supabase
@@ -145,7 +191,7 @@ async function showSignedInUser(user) {
     showToast("Signed in, but your profile is not ready yet. Please refresh.");
     return;
   }
-
+setAuthenticatedUI(true);
   const displayRole = data.role === "contractor" ? "Contractor" : "Worker";
   localStorage.setItem("labourConnectDemoUser", JSON.stringify({
     name: data.full_name,
@@ -155,6 +201,7 @@ async function showSignedInUser(user) {
   }));
   setDashboardRole(displayRole);
   await loadAccountProfile();
+  await loadSkillPassport();
   await loadLiveJobs();
   await loadApplications();
   await loadAgreements();
@@ -183,6 +230,7 @@ accountForm.addEventListener("submit", async (event) => {
 
     const role = accountRole.value;
     const fullName = accountName.value.trim();
+    const mobile = document.getElementById("accountMobile").value.trim();
     const extra = role === "worker"
       ? { primary_skill: document.getElementById("accountPrimarySkill").value.trim() }
       : { organization_name: document.getElementById("accountOrganization").value.trim() };
@@ -191,7 +239,7 @@ accountForm.addEventListener("submit", async (event) => {
       email,
       password,
       options: {
-        data: { full_name: fullName, role, ...extra }
+        data: { full_name: fullName, mobile, role, ...extra }
       }
     });
     if (error) throw error;
@@ -216,6 +264,12 @@ accountForm.addEventListener("submit", async (event) => {
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
     Promise.resolve().then(() => showSignedInUser(session.user));
+  }
+
+  if (event === "SIGNED_OUT") {
+    localStorage.removeItem("labourConnectDemoUser");
+    localStorage.removeItem("lcDashboardRole");
+    setAuthenticatedUI(false);
   }
 });
 
@@ -350,6 +404,43 @@ document.getElementById("languageSelect").addEventListener("change", e => {
 
 
 
+async function loadSkillPassport() {
+  const output = document.getElementById("passportOutput");
+
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user;
+
+  if (!user) return;
+
+  const { data, error } = await supabase
+    .from("worker_profiles")
+    .select("display_name, primary_skill, experience_years, languages")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    output.textContent = "Could not load Skill Passport: " + error.message;
+    return;
+  }
+
+  if (!data) {
+    output.textContent = "No saved Skill Passport yet. Fill in the form to create one.";
+    return;
+  }
+
+  document.getElementById("passportName").value = data.display_name || "";
+  document.getElementById("passportSkill").value = data.primary_skill || "Mason";
+  document.getElementById("passportExperience").value = data.experience_years ?? 0;
+  document.getElementById("passportLanguages").value = data.languages || "";
+
+  output.textContent =
+    (data.display_name || "Worker") + " | " +
+    (data.primary_skill || "Skill not added") + " | " +
+    (data.experience_years ?? 0) + " experience | Languages: " +
+    (data.languages || "Not added") +
+    ". Loaded from your saved Skill Passport.";
+}
+
 /* Supabase-backed profile management */
 async function loadAccountProfile() {
   const output = document.getElementById("profileOutput");
@@ -360,8 +451,14 @@ async function loadAccountProfile() {
     return;
   }
   const { data: base, error: baseError } = await supabase
-    .from("profiles").select("role").eq("user_id", user.id).single();
+  .from("profiles").select("full_name, mobile, role").eq("user_id", user.id).single();
   if (baseError) { output.textContent = baseError.message; return; }
+  document.getElementById("accountFullName").textContent = base.full_name || "Not available";
+document.getElementById("accountEmailDisplay").textContent = user.email || "Not available";
+document.getElementById("accountMobileDisplay").textContent =
+  base.mobile || "Not available";
+document.getElementById("accountRoleDisplay").textContent =
+  base.role === "contractor" ? "Contractor" : "Worker";
 
   const workerForm = document.getElementById("workerProfileForm");
   const contractorForm = document.getElementById("contractorProfileForm");
@@ -679,19 +776,70 @@ radarArea.addEventListener("change", updateRadar);
 radarRadius.addEventListener("change", updateRadar);
 
 
-document.getElementById("passportForm").addEventListener("submit", event => {
+
+document.getElementById("passportForm").addEventListener("submit", async event => {
   event.preventDefault();
 
-  const name = document.getElementById("passportName").value.trim() || "Demo worker";
+  const passportOutput = document.getElementById("passportOutput");
 
-  document.getElementById("passportOutput").textContent =
-    name + " · " +
-    document.getElementById("passportSkill").value + " · " +
-    document.getElementById("passportExperience").value +
-    " experience · Languages: " +
-    (document.getElementById("passportLanguages").value.trim() || "Not added") +
-    ". Sample profile preview only; no identity or skill verification.";
+  const name = document.getElementById("passportName").value.trim() || "Demo worker";
+  const skill = document.getElementById("passportSkill").value;
+  const experience = Number(document.getElementById("passportExperience").value || 0);
+  const languages = document.getElementById("passportLanguages").value.trim();
+
+  // Check the signed-in user
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !authData.user) {
+    passportOutput.textContent = "Please sign in first.";
+    return;
+  }
+
+  const userId = authData.user.id;
+
+  // Try updating the existing worker profile
+  const { data: existingProfile, error: updateError } = await supabase
+    .from("worker_profiles")
+    .update({
+      display_name: name,
+      primary_skill: skill,
+      experience_years: experience,
+      languages: languages
+    })
+    .eq("user_id", userId)
+    .select("user_id")
+    .maybeSingle();
+
+  if (updateError) {
+    passportOutput.textContent = "Could not save passport: " + updateError.message;
+    return;
+  }
+
+  // If no worker profile exists, create one
+  if (!existingProfile) {
+    const { error: insertError } = await supabase
+      .from("worker_profiles")
+      .insert({
+        user_id: userId,
+        display_name: name,
+        primary_skill: skill,
+        experience_years: experience,
+        languages: languages
+      });
+
+    if (insertError) {
+      passportOutput.textContent = "Could not save passport: " + insertError.message;
+      return;
+    }
+  }
+
+  passportOutput.textContent =
+    name + " | " + skill + " | " +
+    experience + " experience | Languages: " +
+    (languages || "Not added") +
+    ". Saved successfully. Skills are not independently verified.";
 });
+
 
 
 document.getElementById("voiceStart").addEventListener("click", () => {
@@ -833,29 +981,39 @@ document.getElementById("fairForm").addEventListener("submit", event => {
 });
 
 
-document.getElementById("matchForm").addEventListener("submit", event => {
+document.getElementById("matchForm").addEventListener("submit", async event => {
   event.preventDefault();
 
   const skill = document.getElementById("matchSkill").value;
   const area = document.getElementById("matchArea").value;
+  const output = document.getElementById("matchOutput");
 
-  const matches = jobCards.filter(card =>
-    card.dataset.skill.includes(skill) &&
-    (area === "all" || card.dataset.location.includes(area))
-  );
+  output.textContent = "Searching registered worker profiles...";
 
-  document.getElementById("matchOutput").textContent = matches.length
-    ? "Sample matches: " +
-      matches.map(card =>
-        card.querySelector("h3").textContent +
-        " (" +
-        card.querySelector(".job-meta").textContent.replace("⌖ ", "") +
-        ")"
-      ).join("; ") +
-      ". These are job listings, not verified workers."
-    : "No sample matches found. Try another skill or area.";
+  const { data, error } = await supabase.rpc("search_matching_workers", {
+    requested_skill: skill,
+    requested_area: area
+  });
+
+  if (error) {
+    output.textContent = "Matching failed: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    output.textContent = "No matching worker profiles found. Try another skill or area.";
+    return;
+  }
+
+  output.textContent = data.map((worker, index) =>
+    (index + 1) + ". " +
+    worker.worker_name +
+    " | Skill: " + worker.worker_skill +
+    " | Experience: " + worker.worker_experience + " years" +
+    " | Area: " + (worker.worker_area || "Not added") +
+    " | Languages: " + (worker.worker_languages || "Not added")
+  ).join("\n\n");
 });
-
 
 /* Worker and contractor dashboard switching */
 

@@ -58,6 +58,29 @@
 .dashboard-card p{font-size:12px;color:var(--muted);min-height:38px;margin:0 0 13px}
 .dashboard-card b{font-size:12px;color:var(--green)}
 .dashboard-note{max-width:850px;margin:17px auto 0;text-align:center;font-size:11px;color:var(--muted)}
+.account-identity {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin: 15px 0;
+}
+
+.account-identity p {
+  margin: 7px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#dashboards[hidden] {
+  display: none !important;
+}
 @media(max-width:700px){.dashboard-section{padding:60px 20px}.dashboard-grid{grid-template-columns:1fr}.dashboard-welcome{align-items:flex-start;flex-direction:column}.dashboard-switch{width:100%}.dashboard-tab{flex:1;padding:11px 8px;font-size:12px}}
 
 /* Learn alongside a crew - supervised observation concept */
@@ -74,3 +97,6 @@
 .agreement-consent input{width:auto!important;min-width:15px;margin-top:2px;accent-color:var(--green)}
 .agreement-preview{white-space:pre-wrap;margin:14px 0;padding:14px;background:#f7f9f6;border:1px solid var(--line);border-radius:9px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .agreement-caution{font-size:11px!important;line-height:1.6;color:#725d30!important;background:#fff8e8;border:1px solid #eee0bd;padding:11px;border-radius:8px;margin-top:12px!important}
+.dashboard-switch[hidden] {
+  display: none !important;
+}

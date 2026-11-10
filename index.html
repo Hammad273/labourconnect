@@ -37,7 +37,7 @@
       </div>
     </section>
 
-    <section class="photo-strip" aria-label="People at work"><article><img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80" alt="Electrician working on a project"><span>Skilled work</span></article><article><img src="https://images.unsplash.com/photo-1503387762-592dee58c266?auto=format&fit=crop&w=700&q=80" alt="Building construction site"><span>Building together</span></article><article><img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=700&q=80" alt="Worker using tools"><span>Local opportunities</span></article></section><section class="search-panel" id="jobs">
+    <section class="photo-strip" aria-label="People at work"><article><img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80" alt="Electrician working on a project"><span>Skilled work</span></article><article><img src="https://images.unsplash.com/photo-1503387762-592dee58c266?auto=format&fit=crop&w=700&q=80" alt="Building construction site"><span>Building together</span></article><article><img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=700&q=80" alt="Worker using tools"><span>Local opportunities</span></article></section><section class="search-panel" id="jobs" hidden></section>
       <div><span class="section-kicker">OPPORTUNITIES</span><h2>Find the work you need</h2><p>Search sample job listings by skill or location.</p></div>
       <form class="search-form" id="searchForm">
         <label><span>Skill or job title</span><input id="skillSearch" type="search" placeholder="e.g. Electrician, Mason"></label>
@@ -57,13 +57,14 @@
       <p class="demo-note">Demo content: these are sample listings, not verified or live vacancies.</p>
     </section>
 
-    <section class="how-section" id="how"><div class="section-heading"><span class="section-kicker">SIMPLE PROCESS</span><h2>One platform. Two ways to move forward.</h2><p>Whether you're hiring or looking for work, getting started is straightforward.</p></div>
+    <section class="how-section" id="how" hidden>
+<div class="section-heading"><span class="section-kicker">SIMPLE PROCESS</span><h2>One platform. Two ways to move forward.</h2><p>Whether you're hiring or looking for work, getting started is straightforward.</p></div>
       <div class="steps-grid"><article class="step-card"><span class="step-number">01</span><div class="step-icon">♙</div><h3>Workers create a profile</h3><p>Add your skills, experience and location so contractors can understand what you do.</p></article><article class="step-card"><span class="step-number">02</span><div class="step-icon">⌕</div><h3>Contractors find talent</h3><p>Explore worker profiles and connect with people who match the work required.</p></article><article class="step-card"><span class="step-number">03</span><div class="step-icon">↗</div><h3>Connect and get started</h3><p>Discuss the work details directly and agree on the next steps.</p></article></div>
     </section>
 
 
 
-    <section class="dashboard-section" id="dashboards">
+    <section class="dashboard-section" id="dashboards" hidden>
       <div class="section-heading">
         <span class="section-kicker">YOUR WORKSPACE</span>
         <h2>A dashboard for every role.</h2>
@@ -73,7 +74,12 @@
         <button class="dashboard-tab active" type="button" data-dashboard="Worker" aria-pressed="true">Worker dashboard</button>
         <button class="dashboard-tab" type="button" data-dashboard="Contractor" aria-pressed="false">Contractor dashboard</button>
       </div>
-      <div class="dashboard-welcome"><div><span class="section-kicker">DEMO WORKSPACE</span><h3 id="dashboardTitle">Welcome to your Worker dashboard</h3><p id="dashboardIntro">Explore work opportunities and organise your skills in one place.</p></div><span class="demo-pill">Sample prototype</span></div>
+      <div class="dashboard-welcome"><div><span class="section-kicker">DEMO WORKSPACE</span><h3 id="dashboardTitle">Welcome to your Worker dashboard</h3><p id="dashboardIntro">Explore work opportunities and organise your skills in one place.</p></div><div class="dashboard-actions">
+  <span class="demo-pill">Sample prototype</span>
+  <button class="button button-outline" id="logoutButton" type="button" hidden>
+    Log out
+  </button>
+</div></div>
       <div class="dashboard-grid" id="workerDashboard">
         <a class="dashboard-card" href="#jobs"><span>🔎</span><h3>Find nearby jobs</h3><p>Search sample openings by skill and location.</p><b>Explore jobs →</b></a>
         <a class="dashboard-card" href="#skill-passport"><span>🪪</span><h3>My Skill Passport</h3><p>Prepare a simple profile of your skills and experience.</p><b>Create profile →</b></a>
@@ -91,7 +97,7 @@
         <a class="dashboard-card" href="#work-agreement"><span>📄</span><h3>Work agreements</h3><p>Preview clear job and wage terms before work begins.</p><b>Prepare agreement →</b></a>
         <a class="dashboard-card" href="#repeat-crew"><span>🔁</span><h3>Repeat teams</h3><p>Save a demo crew label for a future project plan.</p><b>Manage crews →</b></a>
         <a class="dashboard-card" href="#site-safety"><span>🦺</span><h3>Site safety reminders</h3><p>Review basic reminders before work begins.</p><b>Review checklist →</b></a>
-      </div>
+               </div>
       <section class="tool-card" id="jobManagement" style="margin-top:1.5rem">
         <h3>Live job board</h3>
         <p>Signed-in users can browse open jobs. Contractor accounts can post and manage their own listings.</p>
@@ -159,8 +165,14 @@
         <div id="paymentList" class="job-grid"></div>
       </section>
       <section class="tool-card" id="accountProfile" style="margin-top:1.5rem">
-        <h3>My account profile</h3>
+        <h3>My account profile</h3><p><strong>Email:</strong> <span id="accountEmailDisplay">Loading...</span></p>
+        <p><strong>Mobile number:</strong> <span id="accountMobileDisplay">Loading...</span></p>
         <p>Update the profile connected to your signed-in account.</p>
+        <div class="account-identity">
+          <p><strong>Registered name:</strong> <span id="accountFullName">Loading...</span></p>
+          <p><strong>Email:</strong> <span id="accountEmailDisplay">Loading...</span></p>
+          <p><strong>Account type:</strong> <span id="accountRoleDisplay">Loading...</span></p>
+        </div>
         <form id="workerProfileForm" class="tool-form">
           <label>Main skill<input id="profileSkill" maxlength="100" required></label>
           <label>Experience in years<input id="profileExperience" type="number" min="0" max="60" step="0.5"></label>
@@ -178,8 +190,8 @@
       <p class="dashboard-note">Your account profile is connected to Supabase. Job listings, applications, attendance and payment tools are still being integrated.</p>
     </section>
 
-    <section class="tools-section" id="labour-tools">
-      <div class="section-heading">
+<section class="tools-section" id="labour-tools" hidden>
+ <div class="section-heading">
         <span class="section-kicker">THE LABOURCONNECT TOOLKIT</span>
         <h2>More than a job board.</h2>
         <p>Eleven practical tools designed around workers and contractors. Explore each demo below.</p>
@@ -243,9 +255,53 @@
           <button class="button button-outline" id="printAgreement" type="button" disabled>Print / Save preview as PDF</button>
           <p class="agreement-caution"><strong>Important:</strong> This is a prototype template, not legal advice or a lawyer-approved contract. It does not verify identities, capture legally authenticated signatures, or guarantee recovery of unpaid wages. Any real agreement should be reviewed for applicable Indian law. A worker may keep the document and seek advice from the appropriate labour authority or a qualified lawyer about unpaid wages or unlawful deductions. No term here removes statutory rights.</p>
         </article>
-        <article class="tool-card" id="smart-match"><span class="tool-number">10</span><span class="tool-icon">✨</span><h3>Smart Worker Matching</h3><p>See a rule-based sample match using skill and preferred area.</p><form id="matchForm" class="tool-form"><label>Required skill<select id="matchSkill"><option value="mason">Mason</option><option value="electrician">Electrician</option><option value="painter">Painter</option><option value="plumber">Plumber</option><option value="carpenter">Carpenter</option><option value="helper">Helper</option></select></label><label>Preferred area<select id="matchArea"><option value="all">Any sample area</option><option value="kukatpally">Kukatpally</option><option value="secunderabad">Secunderabad</option><option value="miyapur">Miyapur</option><option value="lb nagar">LB Nagar</option><option value="gachibowli">Gachibowli</option><option value="uppal">Uppal</option></select></label><button class="button button-primary" type="submit">Find sample matches</button></form><p class="tool-output" id="matchOutput" aria-live="polite">Matches are based on the six sample job cards above, not real worker profiles or AI.</p></article>
+<article class="tool-card" id="smart-match">
+  <span class="tool-number">10</span>
+  <span class="tool-icon">✨</span>
+  <h3>Smart Worker Matching</h3>
+  <p>Find registered worker profiles by skill and preferred area.</p>
+
+  <form id="matchForm" class="tool-form">
+    <label>Required skill
+      <select id="matchSkill">
+        <option value="mason">Mason</option>
+        <option value="electrician">Electrician</option>
+        <option value="painter">Painter</option>
+        <option value="plumber">Plumber</option>
+        <option value="carpenter">Carpenter</option>
+        <option value="helper">Helper</option>
+      </select>
+    </label>
+
+    <label>Preferred area
+      <select id="matchArea">
+        <option value="all">All areas</option>
+        <option value="kukatpally">Kukatpally</option>
+        <option value="secunderabad">Secunderabad</option>
+        <option value="miyapur">Miyapur</option>
+        <option value="lb nagar">LB Nagar</option>
+        <option value="gachibowli">Gachibowli</option>
+        <option value="uppal">Uppal</option>
+        <option value="hyderabad">Hyderabad</option>
+      </select>
+    </label>
+
+    <button class="button button-primary" type="submit">Find workers</button>
+  </form>
+
+  <p class="tool-output" id="matchOutput" aria-live="polite">
+    Search registered worker profiles by skill and preferred area.
+  </p>
+</article>
       </div>
-      <p class="prototype-disclaimer"><strong>Prototype notice:</strong> All tools use sample information in this browser. There is no live worker verification, GPS tracking, voice server, job application, payment processing, legally authenticated contract signing, official training certification or emergency reporting. Do not enter private personal information.</p>
+      <p class="prototype-disclaimer">
+  <strong>Prototype notice:</strong>
+  Smart Worker Matching searches registered worker profiles saved in the database.
+  Worker details and skills are user-entered and not independently verified.
+  Other tools may use sample information. There is no GPS tracking, voice server,
+  legally authenticated contract signing, official training certification or
+  emergency reporting. Do not enter private personal information.
+</p>
     </section>
 
     <section class="about-section" id="about"><div><span class="section-kicker">OUR PURPOSE</span><h2>Making work connections easier.</h2></div><p>LabourConnect is a project concept designed to bring workers and contractors together in one place. The goal is to make opportunities easier to discover and hiring easier to organise.</p></section>
@@ -260,6 +316,11 @@
     <input id="accountName" required maxlength="60"
            placeholder="Enter your name">
   </label>
+  <label>
+  Mobile number
+  <input id="accountMobile" maxlength="20"
+         placeholder="Enter your mobile number">
+</label>
 
   <label data-i18n="emailLabel">
     Email address
